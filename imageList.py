@@ -28,5 +28,4 @@ def getLevelList(path=''):
     f = file(imageListPath, "r")
     levelList = pickle.load(f)
     f.close()
-    print levelList
     return levelList

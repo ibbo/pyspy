@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 import pygame, os
-from pySpy.constants import *
-from pySpy.utilities import *
+from pyspy.constants import *
+from pyspy.utilities import *
 
 if DEBUG:
     import pdb

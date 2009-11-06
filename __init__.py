@@ -1,8 +1,8 @@
 #This denotes that pySpy is a package
-import pySpy.images
-import pySpy.utilities
-import pySpy.clue
-import pySpy.imageList
-import pySpy.timer
-import pySpy.menu
-from pySpy.constants import *
+import pyspy.images
+import pyspy.utilities
+import pyspy.clue
+import pyspy.imageList
+import pyspy.timer
+import pyspy.menu
+from pyspy.constants import *

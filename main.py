@@ -4,12 +4,12 @@ import sys, os, random, math, getopt
 sys.path.append(os.path.split(os.getcwd())[0])
 import pygame
 from pygame.locals import *
-from pySpy.utilities import *
-import pySpy.clue as clue
-from pySpy.constants import *
-from pySpy.timer import Timer
-from pySpy.menu import *
-import pySpy.images.images as ims
+from pyspy.utilities import *
+import pyspy.clue as clue
+from pyspy.constants import *
+from pyspy.timer import Timer
+from pyspy.menu import *
+import pyspy.images as ims
 
 if DEBUG:
     import pdb

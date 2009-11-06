@@ -3,11 +3,11 @@
 import os, pygame
 from imageList import getLevelList
 if __name__ != "__main__":
-    import pySpy
+    import pyspy
 else:
     import sys
     sys.path.append(os.path.split(os.getcwd())[0])
-    import pySpy
+    import pyspy
 
 class ImageInfo:
     def __init__(self, filename):
@@ -17,7 +17,7 @@ class ImageInfo:
     def initMasks(self):
         levelList = getLevelList('levels')
         #try:
-        clueList = levelList[pySpy.utilities.strip_ext(self.basefile)]
+        clueList = levelList[pyspy.utilities.strip_ext(self.basefile)]
         #except:
         #    print "File: %s does not have any level data associated with it" \
         #            % (self.basefile)
@@ -25,7 +25,7 @@ class ImageInfo:
 
         masks = []
         for clue in clueList:
-            maskFile = pySpy.utilities.strip_ext(self.basefile) + \
+            maskFile = pyspy.utilities.strip_ext(self.basefile) + \
                     '_' + clue + '.png'
             masks.append(ImageMask(maskFile, clueList[clue], \
                     clue.replace('_', ' ')))
@@ -46,7 +46,7 @@ class ImageInfo:
 class ImageMask:
     def __init__(self, filename, level, clue):
         self.image, self.rect = \
-                pySpy.utilities.load_png(filename, rootpath='levels')
+                pyspy.utilities.load_png(filename, rootpath='levels')
         self.mask = pygame.mask.from_surface(self.image)
         self.level = level
         self.clue = clue

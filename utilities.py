@@ -3,7 +3,7 @@
 import pygame, os
 from pygame.locals import *
 from constants import *
-import pySpy.images as ims
+import pyspy.images as ims
 
 if DEBUG:
     import pdb

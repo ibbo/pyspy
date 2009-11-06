@@ -3,7 +3,7 @@
 import pygame, os, random, sys
 import copy
 sys.path.append(os.path.split(os.getcwd())[0])
-from pySpy.constants import *
+from pyspy.constants import *
 
 if DEBUG:
     import pdb

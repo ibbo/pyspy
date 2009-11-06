@@ -2,7 +2,7 @@
 
 import pygame, os
 from pygame.locals import *
-from pySpy.constants import *
+from pyspy.constants import *
 
 class Timer(pygame.Surface):
     def __init__(self, delay, step):

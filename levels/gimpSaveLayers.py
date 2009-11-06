@@ -2,8 +2,9 @@
 from gimpfu import *
 import sys, os
 #TODO: Find a better way of doing this!
-sys.path.append(os.path.join('/','home','ibbo','pySpy','images'))
-import imageList as il
+sys.path.append(os.environ['HOME'])
+import pyspy
+import pyspy.imageList as il
 
 def parse_layer_name(layer):
     result = layer.name.split(':')
