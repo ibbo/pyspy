@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="200"
+   height="200"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.45pre1"
+   version="1.0"
+   sodipodi:docbase="C:\Documents and Settings\Unknown\My Documents\pySpy\images"
+   sodipodi:docname="tick.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   sodipodi:modified="TRUE">
+  <defs
+     id="defs4">
+    <filter
+       inkscape:collect="always"
+       id="filter5245">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.2714345"
+         id="feGaussianBlur5247" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="343.5"
+     inkscape:cy="69.274218"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     width="200px"
+     height="200px"
+     inkscape:window-width="1280"
+     inkscape:window-height="744"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#00ff00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5245)"
+       id="path2162"
+       d="M 51.252874,92.288137 C 54.714067,92.154793 57.967346,93.321824 61.242376,94.4082 C 63.624007,95.449077 65.710564,97.075225 67.881062,98.550543 C 69.621453,100.16895 71.323458,101.8272 73.01218,103.52181 C 75.435341,104.87339 76.69507,107.42836 78.375311,109.55671 C 79.444999,111.53859 80.487283,113.52724 81.537235,115.52065 C 82.420125,117.22878 84.102786,118.24729 85.199771,119.41047 C 81.540852,124.18149 74.796556,123.88111 69.643322,126.25607 C 69.704886,123.30007 69.963202,120.35202 70.124567,117.41347 C 70.285917,114.49465 71.754411,112.25437 72.854714,109.76102 C 74.408228,107.46603 75.545266,104.89424 76.809154,102.39578 C 78.130436,99.860589 79.224326,97.176547 80.375676,94.538424 C 81.731968,91.96734 82.77891,89.207073 83.922185,86.519163 C 84.706966,83.363947 86.293816,80.665909 87.726246,77.885248 C 89.368367,75.524749 91.030094,73.177466 92.675238,70.819182 C 94.496634,68.759099 95.585751,66.198849 96.896281,63.747493 C 101.29662,54.689927 111.93703,52.868609 119.46909,48.325848 C 124.05039,47.45216 111.14801,53.035905 106.98624,55.388095 C 107.77249,52.777254 109.27753,50.65976 110.53065,48.363986 C 117.18188,40.741255 126.69604,36.890628 134.64891,31.966933 L 118.63888,46.122202 C 153.23485,22.691693 134.26182,35.104671 129.23718,39.391207 C 127.82533,41.433945 126.17395,43.189606 125.43394,45.772669 C 119.3608,50.633405 113.31474,61.704542 103.43302,62.527082 C 107.39968,59.724367 119.07007,50.95692 115.39951,54.242585 C 114.19511,56.854838 113.23814,59.658103 111.24259,61.658544 C 109.66649,64.061682 108.20806,66.589912 106.29448,68.674869 C 104.7527,71.234287 103.14401,73.69066 102.27654,76.695046 C 101.1622,79.515745 100.33502,82.506248 98.857143,85.162027 C 97.668971,87.776379 96.427557,90.362593 95.349618,93.045871 C 94.139916,95.552973 93.012419,98.21014 91.37419,100.40633 C 90.235188,102.63984 88.719915,104.67608 88.37039,107.30516 C 88.118383,110.17439 87.592868,113.01868 87.806655,115.95879 C 86.744072,126.36505 81.429772,132.95947 68.217203,132.22393 C 66.803823,130.58024 65.143085,129.15193 63.978403,127.18574 C 62.895817,125.16918 61.866055,123.12126 60.784326,121.10167 C 59.237533,119.24072 57.92059,117.03461 55.813016,115.75023 C 54.174075,114.1601 52.545734,112.5507 50.824635,111.07808 C 48.778636,109.76684 46.831615,108.20785 44.545933,107.44187 C 41.34297,106.50043 38.205138,105.47072 34.836597,105.88859 L 51.252874,92.288137 z "
+       inkscape:export-filename="C:\Documents and Settings\Unknown\My Documents\pySpy\images\tick.png"
+       inkscape:export-xdpi="60.509258"
+       inkscape:export-ydpi="60.509258" />
+  </g>
+</svg>
