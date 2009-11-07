@@ -5,14 +5,21 @@
 import cPickle as pickle
 import os
 
-def addClue(imageName, clue, level, path=''):
-    levelList = getLevelList(path)
+def addClue(imageName, clue, level, levelList=None):
     if not levelList:
         levelList = dict()
     if levelList.has_key(imageName):
         levelList[imageName][clue] = level
     else:
         levelList[imageName] = {clue:level}
+    return levelList
+
+def clearImage(imageName, levelList):
+    if levelList.has_key(imageName):
+        del levelList[imageName]
+    return levelList
+
+def saveLevelList(levelList, path=''):
     if path != '':
         imageListPath = os.path.join(path, "imageList.dat")
     else:
@@ -20,7 +27,7 @@ def addClue(imageName, clue, level, path=''):
     f = file(imageListPath, "w")
     pickle.dump(levelList, f)
     f.close()
-    
+
 def getLevelList(path=''):
     if path != '':
         imageListPath = os.path.join(path, "imageList.dat")

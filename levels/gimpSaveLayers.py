@@ -14,16 +14,20 @@ def parse_layer_name(layer):
         return result[0], None
 
 def python_save_layers(timg, tdrawable):
+    imageFile = os.path.split(timg.filename)
+    imageName = imageFile[1][0:-4]
+    levelList = il.getLevelList(imageFile[0])
+    levelList = il.clearImage(imageName, levelList)
     for l in timg.layers:
         name, level = parse_layer_name(l)
-        imageFile = os.path.split(timg.filename)
-        imageName = imageFile[1][0:-4]
         if name == "Background":
             filename = imageName+'.png'
         else:
             filename = imageName+'_'+name.replace(' ','_')+'.png'
-            il.addClue(imageName, name.replace(' ','_'), level, imageFile[0])
+            levelList = il.addClue(
+                imageName, name.replace(' ','_'), level, levelList)
         pdb.file_png_save_defaults(timg, l, filename, filename)
+    il.saveLevelList(levelList)
 
 register(
         "python_fu_save_layers",
