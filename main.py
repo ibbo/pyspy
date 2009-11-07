@@ -432,7 +432,7 @@ class Playing(GameState):
                 self.timer.remove_time(SHUFFLE_PENALTY)
 
     def more_letters_bonus(self):
-        extra_letters = random.randint(1,3)
+        extra_letters = random.randint(2,4)
         self.image.clue.add_letter(extra_letters)
         if self.timer.time_bar.width > WARNING_TIME:
             self.timer.remove_time(ADD_LETTER_PENALTY)
