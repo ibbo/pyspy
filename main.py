@@ -4,6 +4,7 @@ import sys, os, random, math, getopt
 sys.path.append(os.path.split(os.getcwd())[0])
 import pygame
 from pygame.locals import *
+import pyspy
 from pyspy.utilities import *
 import pyspy.clue as clue
 from pyspy.constants import *
@@ -584,19 +585,26 @@ class GameOver(GameState):
             rect.top += int(100*math.sin(self.delay*2*math.pi/40))
         screen.blit(self.text, rect.bottomleft)
 
+#FIXME: This function needs a proper home
+def getLevels(path=''):
+    if not path:
+        path = 'levels'
+
+    levels = [pyspy.utilities.strip_ext(i) \
+        for i in os.listdir(path) if i.endswith('xcf')]
+    return levels
+
 class GameScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
         self.level = 0
         self.indicator = LevelIndicator((screenRect.width, screenRect.height))
-        self.images = [SpyImage((640,480), 'bookcase'), 
-                       SpyImage((640,480), 'fruitstall'), 
-                       SpyImage((640,480), 'pitstop'),
-                       SpyImage((640,480), 'tram'),
-                       SpyImage((640,480), 'ornaments'),
-                       SpyImage((640,480), 'accident'),
-                       SpyImage((640,480), 'books'),
-                       SpyImage((640,480), 'cats')]
+        levels = getLevels()
+        if getLevels:
+            self.images = [SpyImage((640,480), i) for i in levels]
+        else:
+            print "No levels found"
+            exit(-1)
         self.buttons = {'unshuffle': Button('unshuffle'), 
                 'more_letters': Button('more_letters'),
                 'reveal': Button('reveal'),
