@@ -7,6 +7,8 @@ import os
 
 def addClue(imageName, clue, level, path=''):
     levelList = getLevelList(path)
+    if not levelList:
+        levelList = dict()
     if levelList.has_key(imageName):
         levelList[imageName][clue] = level
     else:
@@ -24,8 +26,12 @@ def getLevelList(path=''):
         imageListPath = os.path.join(path, "imageList.dat")
     else:
         imageListPath = "imageList.dat"
+    
+    try:
+        f = file(imageListPath, "r")
+    except IOError:
+        return None
 
-    f = file(imageListPath, "r")
     levelList = pickle.load(f)
     f.close()
     return levelList

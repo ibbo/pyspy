@@ -17,7 +17,7 @@ if DEBUG:
 class SpyImage(pygame.Surface):
     def __init__(self,size,name):
         pygame.Surface.__init__(self,size)
-        self.image, self.rect = load_png(name)
+        self.image, self.rect = load_png(name, rootpath='levels')
         self.blit(self.image, (0,0))
         self.info = ims.ImageInfo(name + '.png')
         self.mask = []
