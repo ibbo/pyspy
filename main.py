@@ -820,7 +820,7 @@ def usage():
 def main(argv):
     # Command-line argument handling
     try:
-        opts, args = getopt.getopt(argv, "hdq", ["help","debug","quiet"])
+        opts, args = getopt.getopt(argv, "hdqf", ["help","debug","quiet","fullscreen"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -837,13 +837,19 @@ def main(argv):
             print "Debug mode"
             global DEBUG
             DEBUG = 1
+        elif opt in ("-f", "--fullscreen"):
+            print "Running in fullscreen mode"
+            FULL = True
     
     # Initialise the screen
     pygame.init()
     modes = pygame.display.list_modes()
     #mode = modes[1]
     mode = (1024, 768)
-    screen = pygame.display.set_mode(mode)
+    if FULL:
+        screen = pygame.display.set_mode(mode, pygame.FULLSCREEN)
+    else:
+        screen = pygame.display.set_mode(mode)
     pygame.display.set_caption('pySpy')
 
     background = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
