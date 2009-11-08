@@ -600,7 +600,7 @@ class GameScreen:
         self.level = 0
         self.indicator = LevelIndicator((screenRect.width, screenRect.height))
         levels = getLevels()
-        if getLevels:
+        if levels:
             self.images = [SpyImage((640,480), i) for i in levels]
         else:
             print "No levels found"
