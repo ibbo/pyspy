@@ -585,12 +585,15 @@ class GameOver(GameState):
             rect.top += int(100*math.sin(self.delay*2*math.pi/40))
         screen.blit(self.text, rect.bottomleft)
 
-#FIXME: This function needs a proper home
+#FIXME: These functions need a proper home
 def getLevels(path='levels'):
     levels = [pyspy.utilities.strip_ext(i) \
         for i in os.listdir(path) if i.endswith('xcf')]
     return levels
 
+def checkLevel(level, path='levels'):
+    return level+'.png' in os.listdir(path)
+    
 class GameScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
@@ -598,7 +601,8 @@ class GameScreen:
         self.indicator = LevelIndicator((screenRect.width, screenRect.height))
         levels = getLevels()
         if levels:
-            self.images = [SpyImage((640,480), i) for i in levels]
+            self.images = [SpyImage((640,480), i) for i in levels \
+                            if checkLevel(i)]
         else:
             print "No levels found"
             exit(-1)

@@ -3,3 +3,4 @@ ogg/*.ogg
 midi/*.mid
 levels/originals
 stats.out
+levels/imageList.dat
