@@ -11,6 +11,7 @@ from pyspy.constants import *
 from pyspy.timer import Timer
 from pyspy.menu import *
 import pyspy.images as ims
+import pyspy.levels
 
 if DEBUG:
     import pdb
@@ -599,13 +600,19 @@ class GameScreen:
         self.gameControl = gameControlObj
         self.level = 0
         self.indicator = LevelIndicator((screenRect.width, screenRect.height))
+        self.images = []
         levels = getLevels()
-        if levels:
-            self.images = [SpyImage((640,480), i) for i in levels \
+        if not levels:
+            #FIXME: Need to create custom Exception classes
+            raise Exception, "No levels found"
+        for i in levels:
+            if checkLevel(i):
+                self.images.append(SpyImage((640,480), i))
+            else:
+                print "Generating level: %s" %(i)
+                pyspy.levels.generateLevel(i)
+        self.images = [SpyImage((640,480), i) for i in levels \
                             if checkLevel(i)]
-        else:
-            print "No levels found"
-            exit(-1)
         self.buttons = {'unshuffle': Button('unshuffle'), 
                 'more_letters': Button('more_letters'),
                 'reveal': Button('reveal'),
