@@ -586,10 +586,7 @@ class GameOver(GameState):
         screen.blit(self.text, rect.bottomleft)
 
 #FIXME: This function needs a proper home
-def getLevels(path=''):
-    if not path:
-        path = 'levels'
-
+def getLevels(path='levels'):
     levels = [pyspy.utilities.strip_ext(i) \
         for i in os.listdir(path) if i.endswith('xcf')]
     return levels
