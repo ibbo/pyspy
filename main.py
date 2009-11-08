@@ -818,6 +818,7 @@ def usage():
     print usage_string
 
 def main(argv):
+    FULL = False
     # Command-line argument handling
     try:
         opts, args = getopt.getopt(argv, "hdqf", ["help","debug","quiet","fullscreen"])
