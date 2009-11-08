@@ -14,10 +14,11 @@
    height="1052.3622047"
    id="svg2279"
    sodipodi:version="0.32"
-   inkscape:version="0.46+devel r20982"
+   inkscape:version="0.46+devel"
    sodipodi:modified="true"
    sodipodi:docname="logo.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.1">
   <defs
      id="defs2281">
     <inkscape:perspective
@@ -115,7 +116,8 @@
          k2="0.99999999999999989"
          operator="arithmetic"
          result="result4"
-         in="SourceGraphic" />
+         in="SourceGraphic"
+         in2="result2" />
     </filter>
     <filter
        id="filter2856"
@@ -156,7 +158,8 @@
          k2="0.99999999999999989"
          operator="arithmetic"
          result="fbSourceGraphic"
-         in="SourceGraphic" />
+         in="SourceGraphic"
+         in2="result2" />
       <feColorMatrix
          result="fbSourceGraphicAlpha"
          in="fbSourceGraphic"
@@ -239,7 +242,8 @@
          operator="arithmetic"
          result="result4"
          in="result9"
-         k1="0" />
+         k1="0"
+         in2="result2" />
       <feConvolveMatrix
          id="feConvolveMatrix3744"
          order="3 3"
@@ -251,7 +255,8 @@
          id="feBlend3746"
          blend="normal"
          mode="multiply"
-         in="result10" />
+         in="result10"
+         in2="result10" />
     </filter>
     <filter
        id="filter2868"
@@ -292,7 +297,8 @@
          k2="0.99999999999999989"
          operator="arithmetic"
          result="fbSourceGraphic"
-         in="SourceGraphic" />
+         in="SourceGraphic"
+         in2="result2" />
       <feColorMatrix
          result="fbSourceGraphicAlpha"
          in="fbSourceGraphic"
@@ -361,11 +367,13 @@
          id="feComposite3666"
          in2="result7"
          operator="atop"
-         in="result7" />
+         in="result7"
+         result="result8" />
       <feComposite
          id="feComposite3668"
          operator="in"
-         in="result6" />
+         in="result6"
+         in2="result8" />
     </filter>
     <filter
        id="filter3670"
@@ -374,11 +382,13 @@
        inkscape:menu-tooltip="Glow of object's own color at the edges">
       <feGaussianBlur
          id="feGaussianBlur3672"
-         stdDeviation="5" />
+         stdDeviation="5"
+         result="result1" />
       <feComposite
          id="feComposite3674"
          in="SourceGraphic"
-         operator="over" />
+         operator="over"
+         in2="result1" />
     </filter>
     <filter
        id="filter3676"
@@ -419,7 +429,8 @@
          k2="0.99999999999999989"
          operator="arithmetic"
          result="fbSourceGraphic"
-         in="SourceGraphic" />
+         in="SourceGraphic"
+         in2="result2" />
       <feColorMatrix
          result="fbSourceGraphicAlpha"
          in="fbSourceGraphic"
@@ -527,7 +538,8 @@
          k2="0.99999999999999989"
          operator="arithmetic"
          result="fbSourceGraphic"
-         in="SourceGraphic" />
+         in="SourceGraphic"
+         in2="result2" />
       <feColorMatrix
          result="fbSourceGraphicAlpha"
          in="fbSourceGraphic"
@@ -610,7 +622,8 @@
          operator="arithmetic"
          result="result4"
          in="result9"
-         k1="0" />
+         k1="0"
+         in2="result2" />
       <feConvolveMatrix
          id="feConvolveMatrix3744-2"
          order="3 3"
@@ -622,7 +635,8 @@
          id="feBlend3746-9"
          blend="normal"
          mode="multiply"
-         in="result10" />
+         in="result10"
+         in2="result10" />
     </filter>
     <linearGradient
        inkscape:collect="always"
@@ -683,7 +697,8 @@
          k2="0.99999999999999989"
          operator="arithmetic"
          result="result4"
-         in="SourceGraphic" />
+         in="SourceGraphic"
+         in2="result2" />
     </filter>
     <linearGradient
        y2="134.63435"
@@ -710,11 +725,12 @@
      inkscape:cy="933.53837"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     inkscape:window-width="1289"
-     inkscape:window-height="802"
-     inkscape:window-x="1111"
-     inkscape:window-y="33"
-     showgrid="false" />
+     inkscape:window-width="1270"
+     inkscape:window-height="721"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     showgrid="false"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2284">
     <rdf:RDF>
@@ -746,29 +762,26 @@
          x="191.92899"
          y="103.82893"
          style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans;">Spy</tspan></text>
-    <g
-       id="g2970">
-      <path
-         inkscape:export-ydpi="90"
-         inkscape:export-xdpi="90"
-         inkscape:export-filename="/home/ibbo/pySpy/images/logo.png"
-         id="path5302"
-         d="m 198.96695,124.98236 c -1.2199,-3.04974 -29.48601,25.65004 -38.3858,32.32488 -20.65472,15.49105 -12.7265,21.26478 2.02031,32.32488 8.28881,6.21662 22.74193,-16.68101 24.24366,-18.18274 9.41293,-9.41293 25.40628,-20.81292 28.28427,-32.32488 0.16333,-0.65333 1.34687,0 2.0203,0"
-         style="fill:url(#linearGradient3714);fill-opacity:1;fill-rule:evenodd;filter:url(#filter2856);" />
-      <path
-         inkscape:export-ydpi="90"
-         inkscape:export-xdpi="90"
-         inkscape:export-filename="/home/ibbo/pySpy/images/logo.png"
-         transform="translate(-696.02821,3.4799975)"
-         d="m 991.96983,90.187645 a 52.527931,53.538086 0 1 1 -105.05587,0 52.527931,53.538086 0 1 1 105.05587,0 z"
-         sodipodi:ry="53.538086"
-         sodipodi:rx="52.527931"
-         sodipodi:cy="90.187645"
-         sodipodi:cx="939.44189"
-         id="path5162"
-         style="fill:url(#linearGradient3658);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.29999995;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter2844)"
-         sodipodi:type="arc" />
-    </g>
+    <path
+       style="fill:url(#linearGradient3714);fill-opacity:1;fill-rule:evenodd;filter:url(#filter2856)"
+       d="m 198.96695,124.98236 c -1.2199,-3.04974 -29.48601,25.65004 -38.3858,32.32488 -20.65472,15.49105 -12.7265,21.26478 2.02031,32.32488 8.28881,6.21662 22.74193,-16.68101 24.24366,-18.18274 9.41293,-9.41293 25.40628,-20.81292 28.28427,-32.32488 0.16333,-0.65333 1.34687,0 2.0203,0"
+       id="path5302"
+       inkscape:export-filename="/home/ibbo/pySpy/images/logo.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:url(#linearGradient3658);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.29999995;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter2844)"
+       id="path5162"
+       sodipodi:cx="939.44189"
+       sodipodi:cy="90.187645"
+       sodipodi:rx="52.527931"
+       sodipodi:ry="53.538086"
+       d="m 991.96983,90.187645 a 52.527931,53.538086 0 1 1 -105.05587,0 52.527931,53.538086 0 1 1 105.05587,0 z"
+       transform="translate(-696.02821,3.4799975)"
+       inkscape:export-filename="/home/ibbo/pySpy/images/logo.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
        style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter2868);font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
