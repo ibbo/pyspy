@@ -1,25 +1,36 @@
 #!/usr/bin/python
 import sys
-sys.path.append(os.path.split(os.getcwd())[0])
 import os
+sys.path.append(os.path.split(os.getcwd())[0])
 import re
 import shutil
 import hashlib
 import urllib
+import curses
+import pyspy
 from pyspy.constants import *
 
-def checkForUpdates(url='http://pyspy.game-host.org/levels/', path='levels'):
-    updatesAvailable = False
+def checkForUpdates(url=SERVER_URL, path='levels'):
     opener = urllib.FancyURLopener({})
     f = opener.open(url+'levelList.txt')
     levels = f.readlines()
     f.close()
+    updateList = []
     for i in levels:
+        updateFile = pyspy.utilities.strip_ext(i) + '.xcf'
         m = hashlib.md5()
         f = opener.open(url+i)
         remoteHash = f.read().split()
         f.close()
-        localFile = open(os.path.join(path,remoteHash[1]), 'r')
+        try:
+            localFile = open(os.path.join(path,remoteHash[1]), 'r')
+        except IOError:
+            # If there's an IOError we assume the file doesn't exist and
+            # that there's a new level on the server. So add it to the list
+            # of updates to be downloaded.
+            print "New level available: %s" %(updateFile)
+            updateList.append(updateFile)
+            continue
         m.update(localFile.read())
         localFile.close()
         sum = m.hexdigest()
@@ -29,10 +40,37 @@ def checkForUpdates(url='http://pyspy.game-host.org/levels/', path='levels'):
             print sum
             print '\n'
         if sum != remoteHash[0]:
-            print "Updates available for: %s" %(i)
-            updatesAvailable = True
-    return updatesAvailable
+            print "Updates available for: %s" %(updateFile)
+            updateList.append(updateFile)
+    return updateList
 
+class DownloadStatus:
+    def __init__(self):
+        self.stdscr = curses.initscr()
+
+    def __call__(self, blockCount, blockSize, totalSize):
+        percent = float(blockCount)*float(blockSize)/float(totalSize)*100
+        self.update(percent)
+
+    def set_file(self, filename):
+        self.filename = filename
+
+    def update(self, percent):
+        self.stdscr.addstr(0,0, "Downloading %s: %.1f percent complete"
+                % (self.filename, percent))
+        self.stdscr.refresh()
+
+    def quit(self):
+        curses.endwin()
+
+def downloadUpdates(updateList, url=SERVER_URL, path='levels'):
+    status = DownloadStatus()
+    for i in updateList:
+        status.set_file(i)
+        try:
+            urllib.urlretrieve(url+i, os.path.join(path,i), status)
+        finally:
+            status.quit()
 
 def generateLevel(level, path='levels'):
     #TODO: Make this check for other versions of the Gimp
@@ -49,7 +87,8 @@ def generateLevel(level, path='levels'):
                                     'scripts', 'generate_levels.scm')
     if not os.path.exists(generateScriptPath):
         shutil.copy(os.path.join(path,'generate_levels.scm'), generateScriptPath)
-    
+    print "Running Gimp in batch mode to generate level from .xcf file..."
+    sys.stdout.flush()
     os.system("gimp -i -b '(generate-levels \"%s.xcf\")' -b '(gimp-quit 0)'"
                 %(os.path.join(path,level)))
 

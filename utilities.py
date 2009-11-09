@@ -4,13 +4,18 @@ import pygame, os
 from pygame.locals import *
 from constants import *
 import pyspy.images as ims
+import re
 
 if DEBUG:
     import pdb
 
 def strip_ext(filename):
-    #FIXME: This assumes all file extensions are 3 characters long
-    return filename[0:-4]
+    p = re.compile('(.*)\.[a-zA-Z0-9]*\s?$')
+    m = p.match(filename)
+    if m:
+        return m.group(1)
+    else:
+        return filename
 
 def load_png(name, rootpath='images'):
     """ Load image and return image object"""

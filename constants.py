@@ -1,6 +1,6 @@
 #!/usr/bin/python
-#constants.py - defines constants for use in pySpy# Some constants for the different menu codes
-# TODO: Brainwave - the constants (ie offsets) could be different for different screen resolutions etc.
+#constants.py - defines constants for use in pySpy
+# Some constants for the different menu codes
 QUIT = -1
 MAIN_MENU = 0
 GAME = 1
@@ -37,3 +37,5 @@ SOUND = 1
 # Code control
 DEBUG = False
 DEBUG_DRAW_OUTLINE = 0
+# Server address
+SERVER_URL = 'http://pyspy.game-host.org/levels/'
