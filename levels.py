@@ -88,7 +88,7 @@ def generateLevel(level, path='levels'):
                                     'scripts', 'generate_levels.scm')
     if not os.path.exists(generateScriptPath):
         shutil.copy(os.path.join(path,'generate_levels.scm'), generateScriptPath)
-    print "Running Gimp in batch mode to generate level from .xcf file..."
+    print "Running Gimp in batch mode to generate level: %s" %(level)
     sys.stdout.flush()
     os.system("gimp -i -b '(generate-levels \"%s.xcf\")' -b '(gimp-quit 0)'"
                 %(os.path.join(path,level)))
