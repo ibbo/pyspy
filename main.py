@@ -11,7 +11,6 @@ from pyspy.constants import *
 from pyspy.timer import Timer
 from pyspy.menu import *
 import pyspy.images as ims
-import pyspy.levels
 
 if DEBUG:
     import pdb
@@ -821,7 +820,8 @@ def main(argv):
     FULL = False
     # Command-line argument handling
     try:
-        opts, args = getopt.getopt(argv, "hdqf", ["help","debug","quiet","fullscreen"])
+        opts, args = getopt.getopt(argv, "hdqfu",
+                ["help","debug","quiet","fullscreen","update"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -841,7 +841,13 @@ def main(argv):
         elif opt in ("-f", "--fullscreen"):
             print "Running in fullscreen mode"
             FULL = True
-    
+        elif opt in ("-u", "--update"):
+            print "Checking for updates..."
+            updates = pyspy.update.update()
+            if not updates:
+                print "No updates available"
+            sys.exit()
+
     # Initialise the screen
     pygame.init()
     modes = pygame.display.list_modes()

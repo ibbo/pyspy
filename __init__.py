@@ -6,4 +6,5 @@ import pyspy.imageList
 import pyspy.timer
 import pyspy.menu
 import pyspy.levels
+import pyspy.update
 from pyspy.constants import *

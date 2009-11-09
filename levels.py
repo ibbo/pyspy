@@ -71,6 +71,7 @@ def downloadUpdates(updateList, url=SERVER_URL, path='levels'):
             urllib.urlretrieve(url+i, os.path.join(path,i), status)
         finally:
             status.quit()
+    status.quit()
 
 def generateLevel(level, path='levels'):
     #TODO: Make this check for other versions of the Gimp
