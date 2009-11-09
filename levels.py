@@ -1,8 +1,38 @@
 #!/usr/bin/python
 import sys
+sys.path.append(os.path.split(os.getcwd())[0])
 import os
 import re
 import shutil
+import hashlib
+import urllib
+from pyspy.constants import *
+
+def checkForUpdates(url='http://pyspy.game-host.org/levels/', path='levels'):
+    updatesAvailable = False
+    opener = urllib.FancyURLopener({})
+    f = opener.open(url+'levelList.txt')
+    levels = f.readlines()
+    f.close()
+    for i in levels:
+        m = hashlib.md5()
+        f = opener.open(url+i)
+        remoteHash = f.read().split()
+        f.close()
+        localFile = open(os.path.join(path,remoteHash[1]), 'r')
+        m.update(localFile.read())
+        localFile.close()
+        sum = m.hexdigest()
+        if DEBUG:
+            print i
+            print remoteHash[0]
+            print sum
+            print '\n'
+        if sum != remoteHash[0]:
+            print "Updates available for: %s" %(i)
+            updatesAvailable = True
+    return updatesAvailable
+
 
 def generateLevel(level, path='levels'):
     #TODO: Make this check for other versions of the Gimp

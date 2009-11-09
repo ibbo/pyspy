@@ -35,5 +35,5 @@ TIMER_DELAY = {'slow':(15,1), 'medium':(10,1),
 MUSIC = 1
 SOUND = 1
 # Code control
-DEBUG = 0
+DEBUG = False
 DEBUG_DRAW_OUTLINE = 0
