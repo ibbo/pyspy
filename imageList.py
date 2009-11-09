@@ -15,8 +15,9 @@ def addClue(imageName, clue, level, levelList=None):
     return levelList
 
 def clearImage(imageName, levelList):
-    if levelList.has_key(imageName):
-        del levelList[imageName]
+    if levelList:
+        if levelList.has_key(imageName):
+            del levelList[imageName]
     return levelList
 
 def saveLevelList(levelList, path=''):

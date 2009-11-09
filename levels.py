@@ -13,12 +13,12 @@ def generateLevel(level, path='levels'):
     layerScriptPath = os.path.join(os.environ['HOME'], '.gimp-2.6', \
                                     'plug-ins', 'gimpSaveLayers.py')
     if not os.path.exists(layerScriptPath):
-        shutil.copy('gimpSaveLayers.py', layerScriptPath)
+        shutil.copy(os.path.join(path,'gimpSaveLayers.py'), layerScriptPath)
     
     generateScriptPath = os.path.join(os.environ['HOME'], '.gimp-2.6', \
                                     'scripts', 'generate_levels.scm')
     if not os.path.exists(generateScriptPath):
-        shutil.copy('generate_levels.scm', generateScriptPath)
+        shutil.copy(os.path.join(path,'generate_levels.scm'), generateScriptPath)
     
     os.system("gimp -i -b '(generate-levels \"%s.xcf\")' -b '(gimp-quit 0)'"
                 %(os.path.join(path,level)))

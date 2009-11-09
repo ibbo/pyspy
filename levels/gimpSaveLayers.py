@@ -28,7 +28,7 @@ def python_save_layers(timg, tdrawable):
                 imageName, name.replace(' ','_'), level, levelList)
         filename = os.path.join(imageFile[0], filename)
         pdb.file_png_save_defaults(timg, l, filename, filename)
-    il.saveLevelList(levelList)
+    il.saveLevelList(levelList, path=imageFile[0])
 
 register(
         "python_fu_save_layers",
