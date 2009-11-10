@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # A generic image class for storing info about the images
-import os, pygame
+import os
+import pygame
+import math
 from imageList import getLevelList
 if __name__ != "__main__":
     import pyspy
@@ -55,6 +57,11 @@ class ImageMask:
 
     def __str__(self):
         return self.clue
+
+    def get_distance(self, pos):
+        centroid = self.mask.centroid()
+        dist = math.sqrt((pos[0]-centroid[0])**2 + (pos[1]-centroid[1])**2)
+        return dist
 
 if __name__ == '__main__':
     i = ImageInfo('bookcase.png')

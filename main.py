@@ -292,7 +292,9 @@ class CloseIndicator(pygame.Surface):
     def __init__(self):
         pygame.Surface.__init__(self, (100,100), pygame.SRCALPHA)
         self.rect = self.get_rect()
-        self.colour = (255,255,255,127)
+        self.colours = pyspy.utilities.fireRGB()
+        self.colour = pygame.Color(*self.colours[0])
+        self.colour.a = 127
         self.fill(self.colour)
         self.anim_length = 20
         self.anim_tick = self.anim_length
@@ -305,7 +307,12 @@ class CloseIndicator(pygame.Surface):
         self.rect.left = left - self.rect.width/2
 
     def set_colour(self, distance):
-        pass
+        temp = int(distance/300*255)
+        if temp > 254:
+            temp = 254
+        self.colour = pygame.Color(*self.colours[temp])
+        self.colour.a = 127
+        self.fill(self.colour)
 
     def reset(self):
         self.anim_tick = self.anim_length
@@ -398,7 +405,8 @@ class Playing(GameState):
                     # Need to set the colour of the indicator based on the
                     # distance away from the object to find. TODO: Need to
                     # find a way to get a measure of that distance.
-                    #self.indicator.set_colour(sqrt(
+                    distance = self.image.mask.get_distance((x,y))
+                    self.indicator.set_colour(distance)
                     self.indicator.show = True
             else:
                 for button in self.buttons.values():
