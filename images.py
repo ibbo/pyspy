@@ -46,6 +46,7 @@ class ImageInfo:
         return output
 
 class ImageMask:
+    #TODO: Need to handle masks with more than one item in them
     def __init__(self, filename, level, clue):
         self.image, self.rect = \
                 pyspy.utilities.load_png(filename, rootpath='levels')
@@ -59,9 +60,10 @@ class ImageMask:
         return self.clue
 
     def get_distance(self, pos):
-        centroid = self.mask.centroid()
-        dist = math.sqrt((pos[0]-centroid[0])**2 + (pos[1]-centroid[1])**2)
-        return dist
+        masks = self.mask.connected_components()
+        outlines = [i for j in masks for i in j.outline(10)]
+        dist = [math.sqrt((pos[0]-i[0])**2 +(pos[1]-i[1])**2) for i in outlines]
+        return min(dist)
 
 if __name__ == '__main__':
     i = ImageInfo('bookcase.png')
