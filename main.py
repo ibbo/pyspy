@@ -414,7 +414,6 @@ class Playing(GameState):
                 y = mousepos[1]-self.image.rect.top
                 if self.image.mask.mask.get_at((x,y)):
                     self.yipee_sound.play()
-                    # Transition to Correct state
                     self.gameScreen.state = self.gameScreen.states['Correct']
                     self.gameScreen.state.enter()
                 else:
@@ -422,8 +421,7 @@ class Playing(GameState):
                     self.timer.remove_time()
                     self.indicator.set_pos(mousepos[0], mousepos[1])
                     # Need to set the colour of the indicator based on the
-                    # distance away from the object to find. TODO: Need to
-                    # find a way to get a measure of that distance.
+                    # distance away from the object to find. 
                     distance = self.image.mask.get_distance((x,y))
                     self.indicator.set_colour(distance)
                     self.indicator.show = True
@@ -755,7 +753,8 @@ class MusicControl:
     def __init__(self):
         self.music_dir = 'midi'
         self.filenames = self.get_filenames()
-        self.filenames = [i for i in self.filenames if i.endswith('.mid') or i.endswith('.ogg')]
+        self.filenames = [i for i in self.filenames if i.endswith('.mid')\
+                                                    or i.endswith('.ogg')]
         self.current_track = 0
         self.On = MUSIC
         self.paused = 0
@@ -769,7 +768,6 @@ class MusicControl:
                 if randomize:
                     self.current_track = random.randint(0, len(self.filenames)-1)
                 track = self.filenames[self.current_track]
-                #track = 'chpn_op10_e05.ogg'
                 pygame.mixer.music.load(os.path.join(self.music_dir,track))
                 pygame.mixer.music.play()
 
@@ -887,7 +885,6 @@ def main(argv):
     pygame.display.set_caption('pySpy')
 
     background = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-    #background.convert_alpha()
     background.fill((255,255,255))
     try:
         bkg_name = 'background_'+str(mode[0])+'x'+str(mode[1])
@@ -902,8 +899,6 @@ def main(argv):
     logo_rect.top = bkg_rect.top + 20
     background.blit(logo, logo_rect)
     background = background.convert_alpha()
-    #background.fill((0,0,160))
-    
 
     bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT), 
                                     MENU_SIZE_BIG)
