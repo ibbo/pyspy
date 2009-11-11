@@ -35,7 +35,7 @@ TIMER_DELAY = {'slow':(15,1), 'medium':(10,1),
 MUSIC = 1
 SOUND = 1
 # Code control
-DEBUG = True
+DEBUG = False
 DEBUG_DRAW_OUTLINE = 0
 # Server address
 SERVER_URL = 'http://pyspy.game-host.org/levels/'

@@ -755,7 +755,7 @@ class MusicControl:
     def __init__(self):
         self.music_dir = 'midi'
         self.filenames = self.get_filenames()
-        self.filenames = [i for i in self.filenames if i.endswith('.ogg')]
+        self.filenames = [i for i in self.filenames if i.endswith('.mid') or i.endswith('.ogg')]
         self.current_track = 0
         self.On = MUSIC
         self.paused = 0
