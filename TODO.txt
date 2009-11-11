@@ -6,16 +6,9 @@ pySpy TODO list:
 * Make sure everything fits onto the screen at different resolutions
 * Improve the level indicator
 * More levels, some amusing
-* Improve gameplay, bonuses such as reveal letter, unshuffle, and freeze time with icons in bottom right of screen.
-* Time should go down quicker at higher levels.
-* Make menu selection work with mouse
--Use a mask for the objects in the image, not a rectangle
--Sort out the issues with the screen dimensions
--Outline the things in the image with a rectangle
+* Add a freeze time bonus
+* Add an indicator of the number of bonuses left at top right of bonus button.
 -Have a debug mode where the mask is overlaid on the images
 -Find more images
--Refactor the code
-    - Improve text handling code, replace with a text object
--Remove magic numbers (there are lots of them!)
 -Make instructions page readable
 -Music volume control
