@@ -117,7 +117,7 @@ class StartScreen:
 class InstructionsScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
-        self.text_font = pygame.font.Font(os.path.join('fonts',TEXT_FONT), 30)
+        self.text_font = pygame.font.Font(os.path.join('fonts',MONO_FONT), 22)
         self.filename = 'Instructions.txt'
         self.lines = self.get_instructions()
         self.drawn = 0
@@ -129,7 +129,7 @@ class InstructionsScreen:
         lines = [i.strip() for i in raw_lines]
         rendered_lines = []
         for i in lines:
-            rendered_lines.append(self.text_font.render(i,1,(255,255,255), (0,0,0)))
+            rendered_lines.append(self.text_font.render(i,1,(0,0,0)))
         return rendered_lines
 
     def update(self):
@@ -148,7 +148,7 @@ class InstructionsScreen:
             screen.blit(background, (0,0))
             count = 0
             for i in self.lines:
-                screen.blit(i, (50, 50 + count*30))
+                screen.blit(i, (50, 50 + count*22))
                 count += 1
         self.drawn = 1
 
@@ -498,6 +498,8 @@ class Playing(GameState):
             if self.timer.time_bar.width > WARNING_TIME:
                 self.timer.remove_time(SHUFFLE_PENALTY)
             self.buttons['unshuffle'].toggle_active()
+            if self.image.clue.allShown and self.buttons['reveal'].active:
+                self.buttons['reveal'].toggle_active()
             return True
         return False
 

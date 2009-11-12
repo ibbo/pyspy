@@ -18,6 +18,14 @@ taken away, but you do get an extra letter.
 *The first letter is always in the 
 right place, but subsequent letters may not be. 
 
-*You can make the letters go in the right place 
-by pressing 'u', but this takes away an 
-appreciable amount of time.
+*You have several bonuses to help you if you get
+stuck. The number is limited so use them wisely.
+
+   - Reveal: This reveals the clue, all you have
+     to do now is find the object.
+   - Unshuffle: This puts all the currently
+     visible letters into their correct positions
+     in the clue.
+   - Add letters: Shows some more letters in the
+     clue.
+

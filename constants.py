@@ -25,6 +25,7 @@ X_OFFSET = 20
 Y_OFFSET = 50
 # Text Constants
 TEXT_FONT = 'Ace.ttf'
+MONO_FONT = 'FreeMono.ttf'
 MENU_SIZE_NORMAL = 30
 MENU_SIZE_BIG = 40
 BONUS_SIZE = 20
@@ -47,7 +48,7 @@ ADD_TIMES = 3
 REVEALS = 1
 # Timer decrease delay
 TIMER_DELAY = {'slow':(15,1), 'medium':(10,1),
-        'fast':(5,1), 'very fast':(2,1), 'impossible':(1,2)}
+        'fast':(5,1), 'very fast':(2,2), 'impossible':(1,2)}
 # Music control
 MUSIC = 1
 SOUND = 1
