@@ -21,7 +21,8 @@ import re
 import shutil
 import hashlib
 import urllib
-import curses
+if os.name != 'nt':
+    import curses
 import pyspy
 from pyspy.constants import *
 
@@ -61,7 +62,8 @@ def checkForUpdates(url=SERVER_URL, path='levels'):
 
 class DownloadStatus:
     def __init__(self):
-        self.stdscr = curses.initscr()
+        if os.name != 'nt':
+            self.stdscr = curses.initscr()
 
     def __call__(self, blockCount, blockSize, totalSize):
         percent = float(blockCount)*float(blockSize)/float(totalSize)*100
@@ -71,12 +73,16 @@ class DownloadStatus:
         self.filename = filename
 
     def update(self, percent):
-        self.stdscr.addstr(0,0, "Downloading %s: %.1f percent complete"
+        if os.name != 'nt':
+            self.stdscr.addstr(0,0, "Downloading %s: %.1f percent complete"
                 % (self.filename, percent))
-        self.stdscr.refresh()
+            self.stdscr.refresh()
+        else:
+            print "Downloading %s: %.1f percent complete" % (self.filename, percent)
 
     def quit(self):
-        curses.endwin()
+        if os.name != 'nt':
+            curses.endwin()
 
 def downloadUpdates(updateList, url=SERVER_URL, path='levels'):
     status = DownloadStatus()
@@ -89,24 +95,39 @@ def downloadUpdates(updateList, url=SERVER_URL, path='levels'):
     status.quit()
 
 def generateLevel(level, path='levels'):
-    #TODO: Make this check for other versions of the Gimp
-    if not os.path.exists(os.path.join(os.environ['HOME'], '.gimp-2.6')):
+    if os.name == 'nt':
+        rootPath = os.environ['USERPROFILE']
+    else:
+        rootPath = os.environ['HOME']
+    
+    p = re.compile('\.gimp-2\.[0-9]')
+    gimpFolder = [i for i in os.listdir(rootPath) if p.match(i)]
+    if not gimpFolder:
         #FIXME: This should be more than just an "Exception"
         raise Exception, "Gimp installation not found"
+    else:
+        # Any Gimp will do so tae the first one found TODO: but we should
+        # really use the latest available version.
+        gimpFolder = gimpFolder[0]
     
-    layerScriptPath = os.path.join(os.environ['HOME'], '.gimp-2.6', \
+    layerScriptPath = os.path.join(rootPath, gimpFolder, \
                                     'plug-ins', 'gimpSaveLayers.py')
     if not os.path.exists(layerScriptPath):
         shutil.copy(os.path.join(path,'gimpSaveLayers.py'), layerScriptPath)
     
-    generateScriptPath = os.path.join(os.environ['HOME'], '.gimp-2.6', \
+    generateScriptPath = os.path.join(rootPath, gimpFolder, \
                                     'scripts', 'generate_levels.scm')
     if not os.path.exists(generateScriptPath):
         shutil.copy(os.path.join(path,'generate_levels.scm'), generateScriptPath)
     print "Running Gimp in batch mode to generate level: %s" %(level)
     sys.stdout.flush()
-    os.system("gimp -i -b '(generate-levels \"%s.xcf\")' -b '(gimp-quit 0)'"
-                %(os.path.join(path,level)))
+    if os.name == 'nt':
+        gimpCommand = "gimp-2.6.exe"
+    else:
+        gimpCommand = "gimp"
+    os.system(gimpCommand + 
+              " -i -b '(generate-levels \"%s.xcf\")' -b '(gimp-quit 0)'"
+              %(os.path.join(path,level)))
 
 if __name__ == '__main__':
     generateLevel('*')
