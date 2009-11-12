@@ -120,6 +120,11 @@ class InstructionsScreen:
         self.text_font = pygame.font.Font(os.path.join('fonts',MONO_FONT), 22)
         self.filename = 'Instructions.txt'
         self.lines = self.get_instructions()
+        self.back_button = Button('back', can_disable=False)
+        self.back_button.set_callback(self.quit)
+        self.back_button.rect.topright = screenRect.topright
+        self.back_button.rect.top += 210
+        self.back_button.rect.right -= 45
         self.drawn = 0
 
     def get_instructions(self):
@@ -139,9 +144,17 @@ class InstructionsScreen:
         self.drawn = 0
         pass
 
+    def quit(self):
+        self.gameControl.setMode(MAIN_MENU)
+        return True
+
     def eventHandle(self):
         if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
             self.gameControl.setMode(MAIN_MENU)
+        mousepos = self.gameControl.gameEvent.mousePos
+        if self.gameControl.gameEvent.mouseButtons[0]:
+            if self.back_button.rect.collidepoint(mousepos):
+                self.back_button()
 
     def draw(self, background, screen):
         if not self.drawn:
@@ -150,17 +163,19 @@ class InstructionsScreen:
             for i in self.lines:
                 screen.blit(i, (50, 50 + count*22))
                 count += 1
+            self.back_button.draw(background, screen)
         self.drawn = 1
 
 class Button:
-    def __init__(self, name, callback=None):
+    def __init__(self, name, callback=None, can_disable=True):
         self.image, self.rect = load_png(name)
         self.name = name.replace('_', ' ')
         self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                         BONUS_SIZE)
         self.active = True
-        self.greyed, self.greyed_rect = load_png('grey_' + name)
-        self.greyed_rect = self.rect
+        if can_disable:
+            self.greyed, self.greyed_rect = load_png('grey_' + name)
+            self.greyed_rect = self.rect
         self.callback = callback
         self.dirty = False
 
@@ -186,6 +201,7 @@ class Button:
         self.dirty = True
 
     def draw(self, background, screen):
+        screen.blit(background, self.rect, self.rect)
         if not self.active:
             screen.blit(self.greyed, self.rect)
         else:
@@ -636,13 +652,16 @@ class GameOver(GameState):
     def __init__(self, gameScreen):
         GameState.__init__(self,gameScreen)
         self.font = pygame.font.Font(os.path.join('fonts',TEXT_FONT), 50)
-        self.delay = 200
+        self.delay = 250
         self.buttons = gameScreen.buttons
+        self.won_sound = SoundEffect(os.path.join('sounds', 'brass_fanfare_4.wav'))
 
     def enter(self, won):
-        self.delay = 200
+        self.delay = 250
         if won:
             text = 'You have won!'
+            self.gameControl.music.pause_track()
+            self.won_sound.play()
         else:
             text = 'Game Over'
 
@@ -660,6 +679,7 @@ class GameOver(GameState):
         if self.delay > 0:
             self.delay -= 1
         else:
+            self.gameControl.music.unpause_track()
             self.gameControl.setMode(MAIN_MENU)
 
     def eventHandle(self):
@@ -716,10 +736,11 @@ class GameScreen:
             'GameOver': GameOver(self), 'Correct': Correct(self)}
 
     def button_pause(self):
-        if gameControl.music.paused:
-            gameControl.music.unpause_track()
+        if self.gameControl.music.paused:
+            self.gameControl.music.unpause_track()
         else:
-            gameControl.music.pause_track()
+            self.gameControl.music.pause_track()
+        return True
 
     def set_image(self, imageObj):
         self.image = imageObj
@@ -840,24 +861,29 @@ class MusicControl:
                 track = self.filenames[self.current_track]
                 pygame.mixer.music.load(os.path.join(self.music_dir,track))
                 pygame.mixer.music.play()
+            return True
+        return False
 
     def unpause_track(self):
         if self.paused:
             pygame.mixer.music.unpause()
             self.paused = 0
+        return True
 
     def pause_track(self):
         pygame.mixer.music.pause()
         self.paused = 1
+        return True
 
     def next_track(self, randomize = 1):
         pygame.mixer.music.stop()
-        if self.current_track < len(self.filenames)-2 and not randomize:
-            self.current_track += 1
+        if self.current_track < len(self.filenames)-2:
+            if not randomize:
+                self.current_track += 1
         else:
-            return 0
+            return False
         self.play_track(randomize)
-        return 1
+        return True
 
     def update(self):
         if self.On:
@@ -943,6 +969,10 @@ def main(argv):
                 print "No updates available"
             sys.exit()
 
+    ver = pygame.version.vernum
+    if ver[0] < 1 or (ver[0] < 2 and ver[1] < 9):
+        print "Requires pygame 1.9.0 or greater"
+        return 0
     # Initialise the screen
     pygame.init()
     modes = pygame.display.list_modes()

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,9 +14,10 @@
    height="1052.3622047"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.47pre4 r22446"
    sodipodi:docname="buttons.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.1">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -28,14 +30,15 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.99166667"
      inkscape:cx="244.81106"
-     inkscape:cy="798.91617"
+     inkscape:cy="839.2523"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1066"
      inkscape:window-height="724"
-     inkscape:window-x="1140"
-     inkscape:window-y="108" />
+     inkscape:window-x="314"
+     inkscape:window-y="108"
+     inkscape:window-maximized="0" />
   <defs
      id="defs4">
     <linearGradient
@@ -203,6 +206,24 @@
        y1="130.93361"
        x2="232.85715"
        y2="45.21933" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3045"
+       id="linearGradient2915"
+       gradientUnits="userSpaceOnUse"
+       x1="124.28571"
+       y1="130.93361"
+       x2="232.85715"
+       y2="45.21933" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3045"
+       id="linearGradient2929"
+       gradientUnits="userSpaceOnUse"
+       x1="124.28571"
+       y1="130.93361"
+       x2="232.85715"
+       y2="45.21933" />
   </defs>
   <metadata
      id="metadata7">
@@ -212,6 +233,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -451,6 +473,61 @@
          id="path3154"
          d="M 378.41426,199.89953 L 378.06021,222.40015 L 395.20554,211.68463 L 378.41426,199.89953 z"
          style="fill:#666666;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <path
+       style="fill:#f9f9f9;fill-opacity:1;stroke:none"
+       d="m 426.01643,80.077485 60.90831,0 c 23.00673,0 41.5284,18.52165 41.5284,41.528395 0,23.00673 -18.52167,41.5284 -41.5284,41.5284 l -60.90831,0 c -23.00672,0 -41.52839,-18.52167 -41.52839,-41.5284 0,-23.006745 18.52167,-41.528395 41.52839,-41.528395 z"
+       id="path2891"
+       inkscape:export-filename="/home/ibbo/pyspy/images/back.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <g
+       transform="matrix(0.7751967,0,0,0.7751967,325.65382,44.965802)"
+       id="g2895"
+       inkscape:export-filename="/home/ibbo/pyspy/images/back.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <path
+         id="path2897"
+         d="m 129.28571,45.219331 78.57142,0 c 29.67857,0 53.57143,23.89285 53.57143,53.57143 0,29.678569 -23.89286,53.571429 -53.57143,53.571429 l -78.57142,0 c -29.678568,0 -53.571426,-23.89286 -53.571426,-53.571429 0,-29.67858 23.892858,-53.57143 53.571426,-53.57143 z"
+         style="fill:url(#linearGradient2929);fill-opacity:1;stroke:none" />
+      <g
+         id="g2899"
+         clip-path="url(#clipPath)"
+         transform="translate(1.4285714,-58.571429)">
+        <g
+           id="g2901">
+          <path
+             id="path2903"
+             d="m 127.85714,103.79076 78.57142,0 m 0,0 c 29.67857,0 53.57143,23.89285 53.57143,53.57143 m -185.714277,0 c 0,-29.67858 23.892858,-53.57143 53.571427,-53.57143"
+             style="fill:none;stroke:#ffffff;stroke-width:10;stroke-opacity:1;filter:url(#filter)" />
+          <path
+             id="path2905"
+             d="m 259.99999,157.36219 c 0,29.67857 -23.89286,53.57143 -53.57143,53.57143 m 0,0 -78.57142,0 m 0,0 c -29.678569,0 -53.571427,-23.89286 -53.571427,-53.57143"
+             style="fill:none;stroke:#000000;stroke-width:10;stroke-opacity:1;filter:url(#filter)" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g2907"
+       transform="matrix(0.7751967,0,0,0.7751967,171.72189,36.660129)"
+       inkscape:export-filename="/home/ibbo/pyspy/images/back.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         xml:space="preserve"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         x="365.71429"
+         y="98.076469"
+         id="text2909"><tspan
+           sodipodi:role="line"
+           x="365.71429"
+           y="98.076469"
+           id="tspan2913">Back to</tspan><tspan
+           sodipodi:role="line"
+           x="365.71429"
+           y="138.07648"
+           id="tspan2943">menu</tspan></text>
     </g>
   </g>
 </svg>
