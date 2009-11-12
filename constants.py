@@ -13,7 +13,7 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
-
+import pygame
 #constants.py - defines constants for use in pySpy
 # Some constants for the different menu codes
 QUIT = -1
@@ -27,6 +27,8 @@ Y_OFFSET = 50
 TEXT_FONT = 'Ace.ttf'
 MENU_SIZE_NORMAL = 30
 MENU_SIZE_BIG = 40
+BONUS_SIZE = 20
+BONUS_COUNT_COLOUR = pygame.Color("yellow")
 CLUE_COLOUR = (221, 255, 33)
 MENU_COLOUR = (255, 255, 255)
 MENU_SELECTED_COLOUR = MENU_COLOUR # Using a pointer to represent the selected

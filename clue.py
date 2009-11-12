@@ -58,8 +58,11 @@ class Word(object):
     def showAll(self):
         [i[1].show() for i in self._text]
 
+    def getHidden(self):
+        return [i[1] for i in self._text if not i[1].visible]
+
     def showNext(self):
-        hidden = [i[1] for i in self._text if not i[1].visible]
+        hidden = self.getHidden()
         if hidden:
             if self.randomShow:
                 chosen = random.choice(hidden)
@@ -119,12 +122,15 @@ class Clue(object):
         [i.unshuffle() for i in self._text]
 
     def show_next(self, count=1):
-        shown = None
+        shown = False
         for i in range(count):
             for j in self._text:
                 shown = j.showNext()
                 if shown:
                     break
+        hidden = [i for j in self._text for i in j.getHidden()]
+        if not hidden:
+            shown = False
         return shown
 
     def lock_letter(self, letter_index, word_index=0):
@@ -150,11 +156,13 @@ class ClueImage:
         self.image_base = []
         self.image = self.font.render('', 1, self.colour)
         self.unshuffled = False
+        self.allShown = False
 
     def reset(self, text):
         self.unshuffled = False
         self.clue = Clue(text)
         self.text = str(text)
+        self.allShown = False
         self.clue.lock_letter(0)
         self.clue.hide_all()
         self.clue.shuffle()
@@ -176,7 +184,8 @@ class ClueImage:
     def add_letter(self, letters = 1):
         shown = self.clue.show_next(count=letters)
         if not shown:
-            self.show_all()
+        #    self.show_all()
+            self.allShown = True
         self.render()
         
     def show_all(self):
@@ -184,3 +193,4 @@ class ClueImage:
         self.clue.show_all()
         self.unshuffled = True
         self.render()
+        self.allShown = True

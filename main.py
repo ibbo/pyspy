@@ -20,6 +20,7 @@ sys.path.append(os.path.split(os.getcwd())[0])
 import pygame
 from pygame.locals import *
 import pyspy
+#TODO: Clean up these import statements
 from pyspy.utilities import *
 import pyspy.clue as clue
 from pyspy.constants import *
@@ -155,6 +156,8 @@ class Button:
     def __init__(self, name, callback=None):
         self.image, self.rect = load_png(name)
         self.name = name.replace('_', ' ')
+        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
+                                        BONUS_SIZE)
         self.active = True
         self.greyed, self.greyed_rect = load_png('grey_' + name)
         self.greyed_rect = self.rect
@@ -166,7 +169,7 @@ class Button:
             val = self.callback()
             if not val:
                 self.active = False
-                self.dirty = True
+            self.dirty = True
 
     def reset(self):
         # FIXME: This is a hack to fix this there should be different types
@@ -180,12 +183,19 @@ class Button:
 
     def toggle_active(self):
         self.active = not self.active
+        self.dirty = True
 
     def draw(self, background, screen):
         if not self.active:
             screen.blit(self.greyed, self.rect)
         else:
             screen.blit(self.image, self.rect)
+        #FIXME: Again the different types of buttons should be seperated out
+        # into different classes.
+        if hasattr(self.callback, 'counts'):
+            text = self.font.render("%d" %(self.callback.counts), 1,
+                                            BONUS_COUNT_COLOUR)
+            screen.blit(text, (self.rect.x + 15, self.rect.bottom - 30))
 
 class LevelNumber:
     def __init__(self, level, font, font_big):
@@ -393,6 +403,7 @@ class Playing(GameState):
         self.image = self.gameScreen.image
         self.text_rect = self.gameScreen.text_rect
         self.timer.reset()
+        self.reset()
         level = self.gameScreen.level
         if level <= 1:
             self.timer.set_delay(*TIMER_DELAY['slow'])
@@ -433,6 +444,12 @@ class Playing(GameState):
                     self.gameScreen.state.enter()
                 else:
                     self.image.clue.add_letter()
+                    if self.image.clue.allShown:
+                        if self.buttons['more_letters'].active:
+                            self.buttons['more_letters'].toggle_active()
+                        if self.image.clue.unshuffled:
+                            if self.buttons['reveal'].active:
+                                self.buttons['reveal'].toggle_active()
                     self.timer.remove_time()
                     self.indicator.set_pos(mousepos[0], mousepos[1])
                     # Need to set the colour of the indicator based on the
@@ -457,6 +474,11 @@ class Playing(GameState):
         self.text_rect.width = self.image.rect.width
         screen.blit(background, self.text_rect, self.text_rect)
         screen.blit(self.image.clue.image, self.text_rect)
+        #FIXME: Shouldn't need to blit this every time.
+        screen.blit(background, self.gameScreen.static_text_rect,
+                self.gameScreen.static_text_rect)
+        screen.blit(self.gameScreen.static_text,
+                    self.gameScreen.static_text_rect)
         # Re-draw dirty rects
         for button in self.buttons.values():
             if button.dirty:
@@ -464,23 +486,46 @@ class Playing(GameState):
 
     def reset(self):
         self.indicator.reset()
-
+        for i in self.buttons.values():
+            #FIXME: Need different class for bonus buttons
+            if hasattr(i.callback, 'counts'):
+                if i.callback.counts > 0 and i.active == False:
+                    i.toggle_active()
+        
     def unshuffle_bonus(self):
         if not self.image.clue.unshuffled:
             self.image.clue.unshuffle()
             if self.timer.time_bar.width > WARNING_TIME:
                 self.timer.remove_time(SHUFFLE_PENALTY)
+            self.buttons['unshuffle'].toggle_active()
+            return True
+        return False
 
     def more_letters_bonus(self):
-        extra_letters = random.randint(2,4)
-        self.image.clue.add_letter(extra_letters)
-        if self.timer.time_bar.width > WARNING_TIME:
-            self.timer.remove_time(ADD_LETTER_PENALTY)
+        if not self.image.clue.allShown:
+            extra_letters = random.randint(2,4)
+            self.image.clue.add_letter(extra_letters)
+            if self.image.clue.allShown:
+                self.buttons['more_letters'].toggle_active()
+                if self.image.clue.unshuffled and \
+                        self.buttons['reveal'].active:
+                            self.buttons['reveal'].toggle_active()
+            if self.timer.time_bar.width > WARNING_TIME:
+                self.timer.remove_time(ADD_LETTER_PENALTY)
+            return True
+        return False
 
     def reveal_bonus(self):
-        self.image.clue.show_all()
-        if self.timer.time_bar.width > WARNING_TIME:
-            self.timer.remove_time(REVEAL_PENALTY)
+        if not (self.image.clue.allShown and self.image.clue.unshuffled):
+            self.image.clue.show_all()
+            if self.timer.time_bar.width > WARNING_TIME:
+                self.timer.remove_time(REVEAL_PENALTY)
+            if self.buttons['unshuffle'].active:
+                self.buttons['unshuffle'].toggle_active()
+            if self.buttons['more_letters'].active:
+                self.buttons['more_letters'].toggle_active()
+            return True
+        return False
     
 class Bonus:
     def __init__(self, bonus_function, counts):
@@ -490,8 +535,9 @@ class Bonus:
 
     def __call__(self):
         if self.counts > 0:
-            self.func()
-        self.counts = self.counts - 1
+            applied = self.func()
+            if applied:
+                self.counts = self.counts - 1
         return self.counts
 
     def reset(self):
@@ -504,10 +550,12 @@ class NextLevel(GameState):
         self.buttons = self.gameScreen.buttons
         self.static_font = pygame.font.Font(
                 os.path.join('fonts',TEXT_FONT), 28)
-        self.static_text = self.static_font.render(
+        self.gameScreen.static_text = self.static_font.render(
                 'I spy with my little eye, something beginning with:',\
                         1,(221,255,33))
-        self.static_text_rect = self.static_text.get_rect()
+        self.static_text = self.gameScreen.static_text
+        self.gameScreen.static_text_rect = self.static_text.get_rect()
+        self.static_text_rect = self.gameScreen.static_text_rect
         self.drawn_once = False
 
     def enter(self):
@@ -517,6 +565,7 @@ class NextLevel(GameState):
         self.delay = 1
         pygame.mouse.set_visible(True)
         self.init_layout()
+        
 
     def update(self):
         if not self.level_exists:
@@ -620,7 +669,8 @@ class GameOver(GameState):
         screen.blit(background, (0,0))
         rect = self.text.get_rect()
         screen_rect = screen.get_rect()
-        rect.bottomleft = (screen_rect.width/2 - rect.width/2,screen_rect.height/2-rect.height/2)
+        rect.bottomleft = (screen_rect.width/2 - rect.width/2,
+                           screen_rect.height/2-rect.height/2)
         if self.won:
             rect.top += int(100*math.sin(self.delay*2*math.pi/40))
         screen.blit(self.text, rect.bottomleft)
@@ -653,11 +703,13 @@ class GameScreen:
         self.images = [SpyImage((640,480), i) for i in levels \
                             if checkLevel(i)]
         self.buttons = {'unshuffle': Button('unshuffle'), 
-                'more_letters': Button('more_letters'),
-                'reveal': Button('reveal'),
-                'play': Button('play', callback=self.gameControl.music.unpause_track),
-                'pause': Button('pause', callback=self.button_pause),
-                'next': Button('next', callback=self.gameControl.music.next_track)}
+            'more_letters': Button('more_letters'),
+            'reveal': Button('reveal'),
+            'play': Button('play',
+                callback=self.gameControl.music.unpause_track),
+            'pause': Button('pause', callback=self.button_pause),
+            'next': Button('next',
+                callback=self.gameControl.music.next_track)}
         self.states = {'NextLevel': NextLevel(self), 'Playing': Playing(self),
             'GameOver': GameOver(self), 'Correct': Correct(self)}
 
@@ -781,7 +833,8 @@ class MusicControl:
         if self.On:
             if len(self.filenames)-1 > 0:
                 if randomize:
-                    self.current_track = random.randint(0, len(self.filenames)-1)
+                    self.current_track = \
+                            random.randint(0, len(self.filenames)-1)
                 track = self.filenames[self.current_track]
                 pygame.mixer.music.load(os.path.join(self.music_dir,track))
                 pygame.mixer.music.play()
