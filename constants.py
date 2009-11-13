@@ -56,4 +56,4 @@ SOUND = 1
 DEBUG = False
 DEBUG_DRAW_OUTLINE = 0
 # Server address
-SERVER_URL = 'http://pyspy.game-host.org/levels/'
+SERVER_URL = 'http://pyspygame.sourceforge.net/levels/'
