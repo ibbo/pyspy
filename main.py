@@ -16,6 +16,7 @@
 
 
 import sys, os, random, math, getopt
+import re
 sys.path.append(os.path.split(os.getcwd())[0])
 import pygame
 from pygame.locals import *
@@ -719,8 +720,9 @@ class GameOver(GameState):
 
 #FIXME: These functions need a proper home
 def getLevels(path='levels'):
+    p = re.compile('^[a-zA-Z]+\.png')
     levels = [pyspy.utilities.strip_ext(i) \
-        for i in os.listdir(path) if i.endswith('xcf')]
+        for i in os.listdir(path) if p.match(i)]
     return levels
 
 def checkLevel(level, path='levels'):
@@ -742,8 +744,8 @@ class GameScreen:
             else:
                 print "Generating level: %s" %(i)
                 pyspy.levels.generateLevel(i)
-        self.images = [SpyImage((640,480), i) for i in levels \
-                            if checkLevel(i)]
+        #self.images = [SpyImage((640,480), i) for i in levels \
+        #                    if checkLevel(i)]
         self.buttons = {'unshuffle': Button('unshuffle'), 
             'more_letters': Button('more_letters'),
             'reveal': Button('reveal'),

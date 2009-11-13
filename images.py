@@ -18,7 +18,7 @@
 import os
 import pygame
 import math
-from imageList import getLevelList
+import re
 if __name__ != "__main__":
     import pyspy
 else:
@@ -27,25 +27,22 @@ else:
     import pyspy
 
 class ImageInfo:
-    def __init__(self, filename):
+    def __init__(self, filename, path='levels'):
         self.basefile = filename
-        self.masks = self.initMasks()
+        self.masks = self.initMasks(path)
         
-    def initMasks(self):
-        levelList = getLevelList('levels')
-        #try:
-        clueList = levelList[pyspy.utilities.strip_ext(self.basefile)]
-        #except:
-        #    print "File: %s does not have any level data associated with it" \
-        #            % (self.basefile)
-        #    exit(-1)
+    def initMasks(self, path):
+        #levelList = getLevelList('levels')
+        base_name = pyspy.utilities.strip_ext(self.basefile)
+        p = re.compile('^([a-zA-Z])+_((?:[a-zA-Z]+_)+)([0-9]+)')
+        matches = [p.match(i) for i in os.listdir(path) if base_name in i]
+        matches = [i for i in matches if i]
 
         masks = []
-        for clue in clueList:
-            maskFile = pyspy.utilities.strip_ext(self.basefile) + \
-                    '_' + clue + '.png'
-            masks.append(ImageMask(maskFile, clueList[clue], \
-                    clue.replace('_', ' ')))
+        for match in matches:
+            maskFile = match.group(0) + '.png'
+            masks.append(ImageMask(maskFile, int(match.group(3)), \
+                    match.group(2).replace('_', ' ').strip()))
 
         return masks
 
@@ -72,7 +69,7 @@ class ImageMask:
         #self.boundingBox = self.calculateBoundingBox()
 
     def __str__(self):
-        return self.clue
+        return self.clue + str(self.level)
 
     def get_distance(self, pos):
         masks = self.mask.connected_components()

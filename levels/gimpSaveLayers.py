@@ -15,10 +15,6 @@
 #   along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 from gimpfu import *
 import sys, os
-#TODO: Find a better way of doing this!
-sys.path.append(os.environ['HOME'])
-import pyspy
-import pyspy.imageList as il
 
 def parse_layer_name(layer):
     result = layer.name.split(':')
@@ -30,8 +26,6 @@ def parse_layer_name(layer):
 def python_save_layers(timg, tdrawable):
     imageFile = os.path.split(timg.filename)
     imageName = imageFile[1][0:-4]
-    levelList = il.getLevelList(imageFile[0])
-    levelList = il.clearImage(imageName, levelList)
     height = pdb.gimp_image_height(timg)
     width = pdb.gimp_image_width(timg)
     pdb.gimp_selection_none(timg)
@@ -42,9 +36,7 @@ def python_save_layers(timg, tdrawable):
             filename = os.path.join(imageFile[0], filename)
             pdb.file_png_save_defaults(timg, l, filename, filename)
         else:
-            filename = imageName+'_'+name.replace(' ','_')+'.png'
-            levelList = il.addClue(
-                imageName, name.replace(' ','_'), level, levelList)
+            filename = imageName+'_'+name.replace(' ','_')+'_'+str(level)+'.png'
             new_img = pdb.gimp_image_new(width, height, 0)
             new_layer = pdb.gimp_layer_new(new_img, width, height, 1,
                     l.name, 100, 0)
@@ -56,7 +48,6 @@ def python_save_layers(timg, tdrawable):
             filename = os.path.join(imageFile[0], filename)
             pdb.file_png_save_defaults(new_img, new_layer, filename, filename)
             pdb.gimp_display_delete(display)
-    il.saveLevelList(levelList, path=imageFile[0])
 
 register(
         "python_fu_save_layers",
