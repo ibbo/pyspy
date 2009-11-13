@@ -1,0 +1,8 @@
+pySpy - An I Spy game written in Python using Pygame
+by Thomas Ibbotson
+
+Release Notes:
+-pyspy_1.0-rc1:
+* To run the game use 'python main.py', the folder must be called
+'pyspy' or it will not run as it won't be able to find the pyspy
+module.
