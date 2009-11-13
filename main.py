@@ -722,8 +722,7 @@ class GameScreen:
             else:
                 print "Generating level: %s" %(i)
                 pyspy.levels.generateLevel(i)
-        self.images = [SpyImage((640,480), i) for i in levels \
-                            if checkLevel(i)]
+
         self.buttons = {'unshuffle': Button('unshuffle'), 
             'more_letters': Button('more_letters'),
             'reveal': Button('reveal'),
