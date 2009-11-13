@@ -321,10 +321,30 @@ class Correct(GameState):
             self.text_rect.width = self.image.rect.width
             screen.blit(background, self.text_rect, self.text_rect)
             screen.blit(self.image.clue.image, self.gameScreen.text_rect)
-            screen.blit(self.image.mask.image, (X_OFFSET, Y_OFFSET))
+            # All this code is to convert the binary mask into an area of
+            # the image rect and blit it to the screen.
+            self.image.set_alpha(255)
+            new = pygame.Surface((self.image.rect.width, self.image.rect.height),
+                    pygame.SRCALPHA)
+            new.blit(self.image, (0,0))
+            #screen.blit(self.image.mask.image, (X_OFFSET, Y_OFFSET))
+            brects = self.image.mask.mask.get_bounding_rects()
+            self.image.mask.mask.invert()
+            for brect in brects:
+                for i in range(brect.width):
+                    for j in range(brect.height):
+                        x = i+brect.left
+                        y = j+brect.top
+                        if self.image.mask.mask.get_at((x, y)):
+                            new.set_at((x, y), (0,0,0,0))
+                posrect = Rect(brect)
+                posrect.top += Y_OFFSET
+                posrect.left += X_OFFSET
+                screen.blit(new, posrect, brect)
+            self.image.mask.mask.invert()
             self.drawn = 1
             if DEBUG and DEBUG_DRAW_OUTLINE:
-                for i in self.image.mask.mask.get_bounding_rects():
+                for i in brects:
                     i.left = i.left + X_OFFSET
                     i.top = i.top + Y_OFFSET
                     pygame.draw.rect(screen, (255,255,255),i,2)
