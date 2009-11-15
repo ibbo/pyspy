@@ -26,26 +26,39 @@ if os.name != 'nt':
 import pyspy
 from pyspy.constants import *
 
+def parseLevelName(levelName):
+    p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+_)+)([0-9]+)')
+    m = p.match(levelName)
+    if m:
+        parsedName = {'base_name': m.group(1), 'clue': m.group(2),
+                'level': m.group(3), 'filename': m.group(0)}
+        return parsedName
+    else:
+        return None
+
 def checkForUpdates(url=SERVER_URL, path='levels'):
     opener = urllib.FancyURLopener({})
-    f = opener.open(url+'levelList.txt')
+    f = opener.open(url+'levels.md5')
     levels = f.readlines()
     f.close()
     updateList = []
+    updatedLevels = []
     for i in levels:
-        updateFile = pyspy.utilities.strip_ext(i) + '.xcf'
         m = hashlib.md5()
-        f = opener.open(url+i)
-        remoteHash = f.read().split()
-        f.close()
+        remoteHash = i.split()
         try:
             localFile = open(os.path.join(path,remoteHash[1]), 'r')
         except IOError:
             # If there's an IOError we assume the file doesn't exist and
             # that there's a new level on the server. So add it to the list
             # of updates to be downloaded.
-            print "New level available: %s" %(updateFile)
-            updateList.append(updateFile)
+            parsedName = parseLevelName(remoteHash[1])
+            if not parsedName:
+                print "New level available: %s" %(remoteHash[1])
+            elif parsedName['base_name'] not in updatedLevels:
+                print "New level available for: %s" %(parsedName['base_name'])
+                updatedLevels.append(parsedName['base_name'])
+            updateList.append(remoteHash[1])
             continue
         m.update(localFile.read())
         localFile.close()
@@ -56,8 +69,8 @@ def checkForUpdates(url=SERVER_URL, path='levels'):
             print sum
             print '\n'
         if sum != remoteHash[0]:
-            print "Updates available for: %s" %(updateFile)
-            updateList.append(updateFile)
+            print "Updates available for: %s" %(remoteHash[1])
+            updateList.append(remoteHash[1])
     return updateList
 
 class DownloadStatus:

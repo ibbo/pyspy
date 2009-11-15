@@ -34,15 +34,14 @@ class ImageInfo:
     def initMasks(self, path):
         #levelList = getLevelList('levels')
         base_name = pyspy.utilities.strip_ext(self.basefile)
-        p = re.compile('^([a-zA-Z])+_((?:[a-zA-Z]+_)+)([0-9]+)')
-        matches = [p.match(i) for i in os.listdir(path) if base_name in i]
+        matches = [pyspy.levels.parseLevelName(i) for i in os.listdir(path) if base_name in i]
         matches = [i for i in matches if i]
 
         masks = []
         for match in matches:
-            maskFile = match.group(0) + '.png'
-            masks.append(ImageMask(maskFile, int(match.group(3)), \
-                    match.group(2).replace('_', ' ').strip()))
+            maskFile = match['filename'] + '.png'
+            masks.append(ImageMask(maskFile, int(match['level']), \
+                    match['clue'].replace('_', ' ').strip()))
 
         return masks
 
