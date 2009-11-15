@@ -49,15 +49,24 @@ class SpyImage(pygame.Surface):
         else:
             self.mask = []
             print "No levels found"
-            return self.mask
+            return None
         self.clue.reset(self.mask.clue)
-        # Replace this with a method of the clue class
 
+    def set_spythis_masks(self):
+        # Take 5 random masks
+        random.shuffle(self.info.masks)
+        if len(self.info.masks) > 0:
+            self.masks = self.info.masks[:4]
+        else:
+            self.mask = []
+            print "No levels found"
+            return None
 
 class ImageInfo:
     def __init__(self, filename, path='levels'):
         self.basefile = filename
         self.masks = self.initMasks(path)
+        self.has_spythis = False
         
     def initMasks(self, path):
         #levelList = getLevelList('levels')
@@ -68,6 +77,8 @@ class ImageInfo:
         masks = []
         for match in matches:
             maskFile = match['filename'] + '.png'
+            if '#' in match['clue']:
+                self.has_spythis = True
             masks.append(ImageMask(maskFile, int(match['level']), \
                     match['clue'].replace('_', ' ').strip()))
 
@@ -85,18 +96,23 @@ class ImageInfo:
         return output
 
 class ImageMask:
-    #TODO: Need to handle masks with more than one item in them
     def __init__(self, filename, level, clue):
         self.image, self.rect = \
                 pyspy.utilities.load_png(filename, rootpath='levels')
         self.mask = pygame.mask.from_surface(self.image)
+        self.mask_rect = self.image.get_bounding_rect()
+        self.spythis_rect = Rect(self.mask_rect)
         self.level = level
         self.clue = clue
+        if '#' in self.clue:
+            self.spythis = True
+        else:
+            self.spythis = False
         #TODO: Implement a bounding box calculator
         #self.boundingBox = self.calculateBoundingBox()
 
     def __str__(self):
-        return self.clue + str(self.level)
+        return self.clue + ' level: ' + str(self.level)
 
     def get_distance(self, pos):
         masks = self.mask.connected_components()

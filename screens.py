@@ -164,6 +164,7 @@ class GameScreen:
     def set_image(self, imageObj):
         self.image = imageObj
         self.image.set_mask(self.level)
+        self.image.set_spythis_masks()
     
     def update(self):
         self.state.update()
@@ -179,6 +180,24 @@ class GameScreen:
         else:
             return False
         return True
+
+    def image_from_mask(self, mask):
+        new = pygame.Surface((self.image.rect.width,
+                              self.image.rect.height), pygame.SRCALPHA)
+        new.blit(self.image, (0,0))
+        #screen.blit(self.image.mask.image, (X_OFFSET, Y_OFFSET))
+        brects = mask.mask.get_bounding_rects()
+        mask.mask.invert()
+        for brect in brects:
+            for i in range(brect.width):
+                for j in range(brect.height):
+                    x = i+brect.left
+                    y = j+brect.top
+                    if mask.mask.get_at((x, y)):
+                        new.set_at((x, y), (0,0,0,0))
+        mask.mask.invert()
+        return new, brects
+
 
     def eventHandle(self):
         self.state.eventHandle()

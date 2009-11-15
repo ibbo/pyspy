@@ -56,24 +56,12 @@ class Correct(pyspy.states.GameState):
             # All this code is to convert the binary mask into an area of
             # the image rect and blit it to the screen.
             self.image.set_alpha(255)
-            new = pygame.Surface((self.image.rect.width,
-                                  self.image.rect.height), pygame.SRCALPHA)
-            new.blit(self.image, (0,0))
-            #screen.blit(self.image.mask.image, (X_OFFSET, Y_OFFSET))
-            brects = self.image.mask.mask.get_bounding_rects()
-            self.image.mask.mask.invert()
+            new, brects = self.gameScreen.image_from_mask(self.image.mask)
             for brect in brects:
-                for i in range(brect.width):
-                    for j in range(brect.height):
-                        x = i+brect.left
-                        y = j+brect.top
-                        if self.image.mask.mask.get_at((x, y)):
-                            new.set_at((x, y), (0,0,0,0))
                 posrect = Rect(brect)
                 posrect.top += Y_OFFSET
                 posrect.left += X_OFFSET
                 screen.blit(new, posrect, brect)
-            self.image.mask.mask.invert()
             self.drawn = 1
             if DEBUG and DEBUG_DRAW_OUTLINE:
                 for i in brects:
@@ -170,10 +158,14 @@ class NextLevel(pyspy.states.GameState):
         # Set the image position
         self.image = self.gameScreen.image
         self.image.rect.topleft = (X_OFFSET, Y_OFFSET)
-        self.image.mask.rect.topleft = self.image.rect.topleft
+        last = self.image.rect.bottomleft
+        for i in self.image.masks:
+            i.rect.topleft = self.image.rect.topleft
+            i.spythis_rect.topleft = last
+            last = i.spythis_rect.topright
         if not self.drawn_once:
             self.buttons['reveal'].rect.topleft = \
-                self.image.rect.bottomleft
+                self.image.masks[0].spythis_rect.bottomleft
             self.buttons['reveal'].rect.move_ip(0, 5)
             self.buttons['play'].rect.topleft = \
                 self.buttons['reveal'].rect.bottomleft
@@ -192,6 +184,9 @@ class NextLevel(pyspy.states.GameState):
         self.gameScreen.indicator.draw(self.gameScreen.level)
         screen.blit(self.gameScreen.indicator, 
                 self.gameScreen.indicator.rect)
+        for i in self.image.masks:
+            new, brects = self.gameScreen.image_from_mask(i)
+            screen.blit(new, i.spythis_rect, i.mask_rect)
 
         for button in self.buttons.values():
             button.draw(background, screen)
@@ -244,18 +239,19 @@ class Playing(pyspy.states.GameState):
             if self.image.rect.collidepoint(mousepos):
                 x = mousepos[0]-self.image.rect.left
                 y = mousepos[1]-self.image.rect.top
-                if self.image.mask.mask.get_at((x,y)):
-                    self.yipee_sound.play()
-                    self.gameScreen.state = self.gameScreen.states['Correct']
-                    self.gameScreen.state.enter()
-                else:
-                    self.timer.remove_time()
-                    self.indicator.set_pos(mousepos[0], mousepos[1])
-                    # Need to set the colour of the indicator based on the
-                    # distance away from the object to find. 
-                    distance = self.image.mask.get_distance((x,y))
-                    self.indicator.set_colour(distance)
-                    self.indicator.show = True
+                for i in self.image.masks:
+                    if i.mask.get_at((x,y)):
+                        self.yipee_sound.play()
+                        self.gameScreen.state = self.gameScreen.states['Correct']
+                        self.gameScreen.state.enter()
+                    else:
+                        self.timer.remove_time()
+                        self.indicator.set_pos(mousepos[0], mousepos[1])
+                        # Need to set the colour of the indicator based on the
+                        # distance away from the object to find. 
+                        distance = self.image.mask.get_distance((x,y))
+                        self.indicator.set_colour(distance)
+                        self.indicator.show = True
             else:
                 for button in self.buttons.values():
                     if button.rect.collidepoint(mousepos) and button.active:
