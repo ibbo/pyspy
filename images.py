@@ -16,15 +16,43 @@
 
 # A generic image class for storing info about the images
 import os
+import random
 import pygame
 import math
 import re
-if __name__ != "__main__":
-    import pyspy
-else:
-    import sys
-    sys.path.append(os.path.split(os.getcwd())[0])
-    import pyspy
+import pyspy
+from pygame.locals import *
+from pyspy.constants import *
+
+class SpyImage(pygame.Surface):
+    def __init__(self,size,name):
+        pygame.Surface.__init__(self,size)
+        self.image, self.rect = pyspy.utilities.load_png(name, rootpath='levels')
+        self.blit(self.image, (0,0))
+        self.info = pyspy.images.ImageInfo(name + '.png')
+        self.mask = []
+        self.levels = self.load_levels()
+        self.font = pygame.font.Font(os.path.join('fonts','FreeMono.ttf'), 36)
+        self.clue = pyspy.clue.ClueImage()
+       
+    def load_levels(self):
+        levels = []
+        for i in self.info.masks:
+            levels.append(i.level)
+        return levels
+
+    def set_mask(self, level=1):
+        # Take a random mask
+        masks = [i for i in self.info.masks if i.level == level]
+        if len(masks) > 0:
+            self.mask = masks[random.randint(0,len(masks)-1)]
+        else:
+            self.mask = []
+            print "No levels found"
+            return self.mask
+        self.clue.reset(self.mask.clue)
+        # Replace this with a method of the clue class
+
 
 class ImageInfo:
     def __init__(self, filename, path='levels'):
