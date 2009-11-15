@@ -26,8 +26,6 @@ def update():
     updates = pyspy.levels.checkForUpdates()
     if updates:
         pyspy.levels.downloadUpdates(updates)
-        for i in updates:
-            pyspy.levels.generateLevel(pyspy.utilities.strip_ext(i))
         return True
     else:
         return False
