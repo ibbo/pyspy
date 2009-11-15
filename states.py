@@ -1,4 +1,4 @@
-#This denotes that pySpy is a package
+#!/usr/bin/python
 #    This file is part of pySpy.
 #
 #    pySpy is free software: you can redistribute it and/or modify
@@ -13,13 +13,28 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
-
-import pyspy.images
-import pyspy.utilities
-import pyspy.clue
-import pyspy.timer
-import pyspy.menu
-import pyspy.levels
-import pyspy.update
-import pyspy.states
+import pygame
+from pygame.locals import *
 from pyspy.constants import *
+
+class GameState:
+    def __init__(self, gameScreen):
+        self.gameScreen = gameScreen
+        self.gameControl = gameScreen.gameControl
+
+    def enter(self):
+        pass
+
+    def update(self):
+        pass
+
+    def eventHandle(self):
+        if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
+            self.gameControl.setMode(MAIN_MENU)
+
+    def draw(self, background, screen):
+        pass
+
+    def reset(self):
+        pass
+

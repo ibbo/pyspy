@@ -262,30 +262,10 @@ class LevelIndicator(pygame.Surface):
                 l.rect.top = (j-1)*41 + 20
                 self.blit(l.image, l.rect)
  
-class GameState:
+
+class Correct(pyspy.states.GameState):
     def __init__(self, gameScreen):
-        self.gameScreen = gameScreen
-        self.gameControl = gameScreen.gameControl
-
-    def enter(self):
-        pass
-
-    def update(self):
-        pass
-
-    def eventHandle(self):
-        if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
-            self.gameControl.setMode(MAIN_MENU)
-
-    def draw(self, background, screen):
-        pass
-
-    def reset(self):
-        pass
-
-class Correct(GameState):
-    def __init__(self, gameScreen):
-        GameState.__init__(self,gameScreen)
+        pyspy.states.GameState.__init__(self,gameScreen)
 
     def enter(self):
         self.time_left = 100
@@ -310,7 +290,7 @@ class Correct(GameState):
             raise ValueError('time_left cannot be negative')
 
     def eventHandle(self):
-        GameState.eventHandle(self)
+        pyspy.states.GameState.eventHandle(self)
 
     def draw(self, background, screen):
         if not self.drawn:
@@ -421,9 +401,9 @@ class DistanceIndicator(pygame.Surface):
             screen.blit(image, image.rect)
             self.dirty = False
 
-class Playing(GameState):
+class Playing(pyspy.states.GameState):
     def __init__(self, gameScreen):
-        GameState.__init__(self,gameScreen)
+        pyspy.states.GameState.__init__(self,gameScreen)
         timer_delay = TIMER_DELAY['slow']
         self.timer = Timer(timer_delay[0], timer_delay[1])
         self.buttons = self.gameScreen.buttons
@@ -465,11 +445,13 @@ class Playing(GameState):
             self.gameScreen.state.enter(0)
 
     def eventHandle(self):
-        GameState.eventHandle(self)
+        pyspy.states.GameState.eventHandle(self)
         if self.gameControl.gameEvent.newkeys[K_u]:
-            self.unshuffle_bonus()
+            self.buttons['unshuffle']()
         if self.gameControl.gameEvent.newkeys[K_m]:
-            self.more_letters_bonus()
+            self.buttons['more_letters']()
+        if self.gameControl.gameEvent.newkeys[K_r]:
+            self.buttons['reveal']()
         mousepos = self.gameControl.gameEvent.mousePos
         if self.gameControl.gameEvent.mouseButtons[0]:
             if self.image.rect.collidepoint(mousepos):
@@ -583,9 +565,9 @@ class Bonus:
         self.counts = self.original_counts
 
 #TODO: Implement cool transition effect
-class NextLevel(GameState):
+class NextLevel(pyspy.states.GameState):
     def __init__(self, gameScreen):
-        GameState.__init__(self,gameScreen)
+        pyspy.states.GameState.__init__(self,gameScreen)
         self.buttons = self.gameScreen.buttons
         self.static_font = pygame.font.Font(
                 os.path.join('fonts',TEXT_FONT), 28)
@@ -625,7 +607,7 @@ class NextLevel(GameState):
         self.gameScreen.static_text_rect = self.static_text_rect
 
     def eventHandle(self):
-        GameState.eventHandle(self)
+        pyspy.states.GameState.eventHandle(self)
 
     def init_layout(self):
         # Set the image position
@@ -669,9 +651,9 @@ class NextLevel(GameState):
         for button in self.buttons.values():
             button.draw(background, screen)
 
-class GameOver(GameState):
+class GameOver(pyspy.states.GameState):
     def __init__(self, gameScreen):
-        GameState.__init__(self,gameScreen)
+        pyspy.states.GameState.__init__(self,gameScreen)
         self.font = pygame.font.Font(os.path.join('fonts',TEXT_FONT), 50)
         self.delay = 250
         self.buttons = gameScreen.buttons
@@ -705,7 +687,7 @@ class GameOver(GameState):
 
     def eventHandle(self):
         # Don't allow escaping to main menu from here.
-        #GameState.eventHandle(self)
+        #pyspy.states.GameState.eventHandle(self)
         pass
 
     def draw(self, background, screen):
