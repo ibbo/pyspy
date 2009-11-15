@@ -104,10 +104,19 @@ def main(argv):
                 print "No updates available"
             sys.exit()
 
-    ver = pygame.version.vernum
-    if ver[0] < 1 or (ver[0] < 2 and ver[1] < 9):
+    # Check that compatible versions of pygame and python are being used
+    pygame_ver = pygame.version.vernum
+    if pygame_ver[0] < 1 or (pygame_ver[0] < 2 and pygame_ver[1] < 9):
         print "Requires pygame 1.9.0 or greater"
         return 0
+    python_ver = sys.version_info
+    if python_ver[0] < 2 or (python_ver[0] > 1 and python_ver[1] < 6):
+        print "Requires python 2.6 or greater"
+        return 0
+    if python_ver[0] > 2:
+        print "This is not yet compatible with python 3.0 or greater"
+        return 0
+
     # Initialise the screen
     pygame.init()
     modes = pygame.display.list_modes()
