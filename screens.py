@@ -144,18 +144,15 @@ class GameScreen:
                 print "Generating level: %s" %(i)
                 pyspy.levels.generateLevel(i)
         
-        self.buttons = {'unshuffle': pyspy.gui.Button('unshuffle'), 
-            'more_letters': pyspy.gui.Button('more_letters'),
-            'reveal': pyspy.gui.Button('reveal'),
-            'play': pyspy.gui.Button('play',
+        self.buttons = {'play': pyspy.gui.Button('play',
                 callback=self.gameControl.music.unpause_track),
             'pause': pyspy.gui.Button('pause', callback=self.button_pause),
             'next': pyspy.gui.Button('next',
                 callback=self.gameControl.music.next_track)}
-        self.states = {'NextLevel': pyspy.original.states.NextLevel(self),
-                       'Playing': pyspy.original.states.Playing(self),
-                       'GameOver': pyspy.original.states.GameOver(self),
-                       'Correct': pyspy.original.states.Correct(self)}
+        self.states = {'NextLevel': pyspy.spythis.states.NextLevel(self),
+                       'Playing': pyspy.spythis.states.Playing(self),
+                       'GameOver': pyspy.spythis.states.GameOver(self),
+                       'Correct': pyspy.spythis.states.Correct(self)}
 
     def button_pause(self):
         if self.gameControl.music.paused:

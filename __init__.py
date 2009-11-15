@@ -23,6 +23,7 @@ import pyspy.levels
 import pyspy.update
 import pyspy.states
 import pyspy.original.states
+import pyspy.spythis.states
 import pyspy.bonus
 import pyspy.sound
 import pyspy.effects
