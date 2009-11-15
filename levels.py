@@ -36,6 +36,15 @@ def parseLevelName(levelName):
     else:
         return None
 
+def getLevels(path='levels'):
+    p = re.compile('^[a-zA-Z]+\.png')
+    levels = [pyspy.utilities.strip_ext(i) \
+        for i in os.listdir(path) if p.match(i)]
+    return levels
+
+def checkLevel(level, path='levels'):
+    return level+'.png' in os.listdir(path)
+
 def checkForUpdates(url=SERVER_URL, path='levels'):
     opener = urllib.FancyURLopener({})
     f = opener.open(url+'levels.md5')

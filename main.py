@@ -25,7 +25,6 @@ import pyspy
 from pyspy.utilities import *
 import pyspy.clue as clue
 from pyspy.constants import *
-from pyspy.timer import Timer
 from pyspy.menu import *
 import pyspy.images as ims
 
@@ -65,7 +64,8 @@ class StartScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
         self.menuMax = 3
-        move_sound = SoundEffect(os.path.join('sounds','menu_move.wav'))
+        move_sound = pyspy.sound.SoundEffect(
+                        os.path.join('sounds','menu_move.wav'))
         self.menu = Menu(["Play Game", "Instructions", "Quit"], move_sound)
         self.firstDraw = 1
 
@@ -121,7 +121,7 @@ class InstructionsScreen:
         self.text_font = pygame.font.Font(os.path.join('fonts',MONO_FONT), 22)
         self.filename = 'Instructions.txt'
         self.lines = self.get_instructions()
-        self.back_button = Button('back', can_disable=False)
+        self.back_button = pyspy.gui.Button('back', can_disable=False)
         self.back_button.set_callback(self.quit)
         self.back_button.rect.topright = screenRect.topright
         self.back_button.rect.top += 210
@@ -167,577 +167,36 @@ class InstructionsScreen:
             self.back_button.draw(background, screen)
         self.drawn = 1
 
-class Button:
-    def __init__(self, name, callback=None, can_disable=True):
-        self.image, self.rect = load_png(name)
-        self.name = name.replace('_', ' ')
-        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
-                                        BONUS_SIZE)
-        self.active = True
-        if can_disable:
-            self.greyed, self.greyed_rect = load_png('grey_' + name)
-            self.greyed_rect = self.rect
-        self.callback = callback
-        self.dirty = False
 
-    def __call__(self):
-        if self.callback:
-            val = self.callback()
-            if not val:
-                self.active = False
-            self.dirty = True
-
-    def reset(self):
-        # FIXME: This is a hack to fix this there should be different types
-        # of buttons.
-        if hasattr(self.callback, 'reset'):
-            self.callback.reset()
-        self.active = True
-
-    def set_callback(self, func):
-        self.callback = func
-
-    def toggle_active(self):
-        self.active = not self.active
-        self.dirty = True
-
-    def draw(self, background, screen):
-        screen.blit(background, self.rect, self.rect)
-        if not self.active:
-            screen.blit(self.greyed, self.rect)
-        else:
-            screen.blit(self.image, self.rect)
-        #FIXME: Again the different types of buttons should be seperated out
-        # into different classes.
-        if hasattr(self.callback, 'counts'):
-            text = self.font.render("%d" %(self.callback.counts), 1,
-                                            BONUS_COUNT_COLOUR)
-            screen.blit(text, (self.rect.x + 15, self.rect.bottom - 30))
-
-class LevelNumber:
-    def __init__(self, level, font, font_big):
-        self.colour = (0,0,0)
-        self.image = font.render(str(level), 1, self.colour)
-        self.image_big = font_big.render(str(level), 1, self.colour)
-        self.rect = self.image.get_rect()
-        self.rect_big = self.image_big.get_rect()
-
-class LevelIndicator(pygame.Surface):
-    def __init__(self, size):
-        self.font_big = pygame.font.Font(
-                os.path.join('fonts',TEXT_FONT), 44)
-        self.font = pygame.font.Font(
-                os.path.join('fonts',TEXT_FONT), 36)
-
-        self.mag_image, self.mag_rect = load_png('level_mag')
-        self.levels = range(1, MAX_LEVEL+1)
-        self.level_images = []
-        for i in reversed(self.levels):
-            self.level_images.append(LevelNumber(i, self.font, self.font_big))
-
-        maxWidth = max([i.rect_big.width for i in self.level_images])
-        maxWidth = max([maxWidth, self.mag_rect.width])
-        height = sum([i.rect.height for i in self.level_images])
-        height += self.mag_rect.height
-        size = (maxWidth, height)
-        pygame.Surface.__init__(self, size, SRCALPHA)
-        self.rect = self.get_rect()
-        self.fill([0,0,0,0])
-        for i in self.level_images:
-            i.rect.centerx = self.rect.centerx
-            i.rect_big.centerx = self.rect.centerx
-        self.rect.left = X_OFFSET + 650
-        self.rect.top = Y_OFFSET
-
-    def draw(self, level):
-        self.fill([0,0,0,0])
-        for l,j,i in zip(self.level_images, self.levels, reversed(self.levels)):
-            if i == level:
-                l.rect.top = (j-1)*41 - 5 + 20
-                self.blit(l.image_big, l.rect)
-                self.mag_rect.center = l.rect.center
-                self.mag_rect.centery += 5
-                self.blit(self.mag_image, self.mag_rect)
-            else:
-                l.rect.top = (j-1)*41 + 20
-                self.blit(l.image, l.rect)
- 
-
-class Correct(pyspy.states.GameState):
-    def __init__(self, gameScreen):
-        pyspy.states.GameState.__init__(self,gameScreen)
-
-    def enter(self):
-        self.time_left = 100
-        pygame.mouse.set_visible(False)
-        self.gameScreen.image.clue.show_all()
-        self.image = self.gameScreen.image
-        self.image.set_alpha(127)
-        self.drawn = 0
-
-    def leave(self):
-        self.image.set_alpha(255)
-        pygame.mouse.set_visible(True)
-
-    def update(self):
-        if self.time_left > 0:
-            self.time_left -= 1
-        elif self.time_left == 0:
-            self.gameScreen.state = self.gameScreen.states['NextLevel']
-            self.gameScreen.state.enter()
-            self.leave()
-        else:
-            raise ValueError('time_left cannot be negative')
-
-    def eventHandle(self):
-        pyspy.states.GameState.eventHandle(self)
-
-    def draw(self, background, screen):
-        if not self.drawn:
-            screen.blit(background, self.image.rect, self.image.rect)
-            screen.blit(self.image, (X_OFFSET, Y_OFFSET))
-            old_text_rect = self.gameScreen.text_rect
-            self.text_rect = self.image.clue.image.get_rect()
-            self.text_rect.topleft = old_text_rect.topleft
-            self.text_rect.width = self.image.rect.width
-            screen.blit(background, self.text_rect, self.text_rect)
-            screen.blit(self.image.clue.image, self.gameScreen.text_rect)
-            # All this code is to convert the binary mask into an area of
-            # the image rect and blit it to the screen.
-            self.image.set_alpha(255)
-            new = pygame.Surface((self.image.rect.width, self.image.rect.height),
-                    pygame.SRCALPHA)
-            new.blit(self.image, (0,0))
-            #screen.blit(self.image.mask.image, (X_OFFSET, Y_OFFSET))
-            brects = self.image.mask.mask.get_bounding_rects()
-            self.image.mask.mask.invert()
-            for brect in brects:
-                for i in range(brect.width):
-                    for j in range(brect.height):
-                        x = i+brect.left
-                        y = j+brect.top
-                        if self.image.mask.mask.get_at((x, y)):
-                            new.set_at((x, y), (0,0,0,0))
-                posrect = Rect(brect)
-                posrect.top += Y_OFFSET
-                posrect.left += X_OFFSET
-                screen.blit(new, posrect, brect)
-            self.image.mask.mask.invert()
-            self.drawn = 1
-            if DEBUG and DEBUG_DRAW_OUTLINE:
-                for i in brects:
-                    i.left = i.left + X_OFFSET
-                    i.top = i.top + Y_OFFSET
-                    pygame.draw.rect(screen, (255,255,255),i,2)
-
-class DistanceIndicator(pygame.Surface):
-    def __init__(self):
-        pygame.Surface.__init__(self, (100,100), pygame.SRCALPHA)
-        self.anim_image, self.anim_rect = pyspy.utilities.load_png('hot.png')
-        self.rect = self.get_rect()
-        self.colours = pyspy.utilities.fireRGB()
-        self.colour = pygame.Color(*self.colours[0])
-        #self.colour.a = 0
-        #self.fill(self.colour)
-        self.anim_length = 10
-        self.anim_pause = 2
-        self.anim_tick = self.anim_length*self.anim_pause
-        self.show = False
-        self.dirty = False
-        #self.set_alpha(127)
-
-    def set_pos(self, left, top):
-        self.rect.top = top - self.rect.height/2
-        self.rect.left = left - self.rect.width/2
-
-    def set_colour(self, distance):
-        if distance < 0:
-            distance = 0
-        self.temp = 255 - int(distance/300*255)
-        if self.temp < 0:
-            self.temp = 0
-        elif self.temp > 254:
-            self.temp = 254
-        self.colour = pygame.Color(*self.colours[self.temp])
-        #self.colour.a = 127
-        #self.fill(self.colour)
-
-    def reset(self):
-        self.anim_tick = self.anim_length*self.anim_pause
-        self.show = False
-        self.dirty = False
-
-    def update(self):
-        if self.show and self.anim_tick > 0:
-            self.fill((0,0,0,0))
-            x = self.rect.width/2
-            y = self.rect.height/2
-            frame = (self.anim_length*self.anim_pause -\
-                            self.anim_tick)/self.anim_pause
-            if self.temp > 220:
-                frame_rect = Rect(frame*50, 0, 50, 50)
-                self.blit(self.anim_image, (25, 20), frame_rect)
-            else:
-                radius = (frame+1)*2
-                if radius > 13:
-                    radius = 13
-                pygame.draw.circle(self, self.colour, (x,y), radius, 2)
-            self.anim_tick -= 1
-        elif self.anim_tick == 0:
-            self.show = False
-            self.anim_tick = self.anim_length*self.anim_pause
-            self.dirty = True
-
-    def draw(self, background, screen, image):
-        pos = Rect(self.rect)
-        pos.top -= image.rect.top
-        pos.left -= image.rect.left
-        if self.show and self.anim_tick > 0:
-            screen.blit(background, self.rect, self.rect)
-            screen.blit(image, self.rect, pos)
-            screen.blit(self, self.rect)
-        elif self.dirty:
-            screen.blit(background, self.rect, self.rect)
-            screen.blit(image, image.rect)
-            self.dirty = False
-
-class Playing(pyspy.states.GameState):
-    def __init__(self, gameScreen):
-        pyspy.states.GameState.__init__(self,gameScreen)
-        timer_delay = TIMER_DELAY['slow']
-        self.timer = Timer(timer_delay[0], timer_delay[1])
-        self.buttons = self.gameScreen.buttons
-        self.buttons['unshuffle'].set_callback(
-                Bonus(self.unshuffle_bonus, SHUFFLE_TIMES))
-        self.buttons['reveal'].set_callback(
-                Bonus(self.reveal_bonus, REVEALS))
-        self.buttons['more_letters'].set_callback(
-                Bonus(self.more_letters_bonus, ADD_TIMES))
-        self.yipee_sound = SoundEffect(os.path.join('sounds', 'yipee.wav'))
-        self.indicator = DistanceIndicator()
-
-    def enter(self):
-        self.image = self.gameScreen.image
-        self.text_rect = self.gameScreen.text_rect
-        self.timer.reset()
-        self.reset()
-        level = self.gameScreen.level
-        if level <= 1:
-            self.timer.set_delay(*TIMER_DELAY['slow'])
-        if level > 1 and level <= 3:
-            self.timer.set_delay(*TIMER_DELAY['medium'])
-        elif level > 3 and level <= 7:
-            self.timer.set_delay(*TIMER_DELAY['fast'])
-        elif level > 7 and level <= 9:
-            self.timer.set_delay(*TIMER_DELAY['very fast'])
-        elif level > 9:
-            self.timer.set_delay(*TIMER_DELAY['impossible'])
-            
-        pygame.mouse.set_cursor(*pygame.cursors.load_xbm(
-            os.path.join('cursors', 'mag.xbm'),
-            os.path.join('cursors', 'mag-mask.xbm')))
-        
-    def update(self):
-        self.indicator.update()
-        game_over = self.timer.update()
-        if game_over:
-            self.gameScreen.state = self.gameScreen.states['GameOver']
-            self.gameScreen.state.enter(0)
-
-    def eventHandle(self):
-        pyspy.states.GameState.eventHandle(self)
-        if self.gameControl.gameEvent.newkeys[K_u]:
-            self.buttons['unshuffle']()
-        if self.gameControl.gameEvent.newkeys[K_m]:
-            self.buttons['more_letters']()
-        if self.gameControl.gameEvent.newkeys[K_r]:
-            self.buttons['reveal']()
-        mousepos = self.gameControl.gameEvent.mousePos
-        if self.gameControl.gameEvent.mouseButtons[0]:
-            if self.image.rect.collidepoint(mousepos):
-                x = mousepos[0]-self.image.rect.left
-                y = mousepos[1]-self.image.rect.top
-                if self.image.mask.mask.get_at((x,y)):
-                    self.yipee_sound.play()
-                    self.gameScreen.state = self.gameScreen.states['Correct']
-                    self.gameScreen.state.enter()
-                else:
-                    self.image.clue.add_letter()
-                    if self.image.clue.allShown:
-                        if self.buttons['more_letters'].active:
-                            self.buttons['more_letters'].toggle_active()
-                        if self.image.clue.unshuffled:
-                            if self.buttons['reveal'].active:
-                                self.buttons['reveal'].toggle_active()
-                    self.timer.remove_time()
-                    self.indicator.set_pos(mousepos[0], mousepos[1])
-                    # Need to set the colour of the indicator based on the
-                    # distance away from the object to find. 
-                    distance = self.image.mask.get_distance((x,y))
-                    self.indicator.set_colour(distance)
-                    self.indicator.show = True
-            else:
-                for button in self.buttons.values():
-                    if button.rect.collidepoint(mousepos) and button.active:
-                        button()
-                        
-    def draw(self, background, screen):
-        self.indicator.draw(background, screen, self.image)
-        timer_rect = self.timer.get_rect()
-        timer_rect.topleft = (X_OFFSET,10)
-        screen.blit(background, timer_rect, timer_rect)
-        screen.blit(self.timer, timer_rect)
-        old_text_rect = self.text_rect
-        self.text_rect = self.image.clue.image.get_rect()
-        self.text_rect.topleft = old_text_rect.topleft
-        self.text_rect.width = self.image.rect.width
-        screen.blit(background, self.text_rect, self.text_rect)
-        screen.blit(self.image.clue.image, self.text_rect)
-        #FIXME: Shouldn't need to blit this every time.
-        screen.blit(background, self.gameScreen.static_text_rect,
-                self.gameScreen.static_text_rect)
-        screen.blit(self.gameScreen.static_text,
-                    self.gameScreen.static_text_rect)
-        # Re-draw dirty rects
-        for button in self.buttons.values():
-            if button.dirty:
-                button.draw(background, screen)
-
-    def reset(self):
-        self.indicator.reset()
-        for i in self.buttons.values():
-            #FIXME: Need different class for bonus buttons
-            if hasattr(i.callback, 'counts'):
-                if i.callback.counts > 0 and i.active == False:
-                    i.toggle_active()
-        
-    def unshuffle_bonus(self):
-        if not self.image.clue.unshuffled:
-            self.image.clue.unshuffle()
-            if self.timer.time_bar.width > WARNING_TIME:
-                self.timer.remove_time(SHUFFLE_PENALTY)
-            self.buttons['unshuffle'].toggle_active()
-            if self.image.clue.allShown and self.buttons['reveal'].active:
-                self.buttons['reveal'].toggle_active()
-            return True
-        return False
-
-    def more_letters_bonus(self):
-        if not self.image.clue.allShown:
-            extra_letters = random.randint(2,4)
-            self.image.clue.add_letter(extra_letters)
-            if self.image.clue.allShown:
-                self.buttons['more_letters'].toggle_active()
-                if self.image.clue.unshuffled and \
-                        self.buttons['reveal'].active:
-                            self.buttons['reveal'].toggle_active()
-            if self.timer.time_bar.width > WARNING_TIME:
-                self.timer.remove_time(ADD_LETTER_PENALTY)
-            return True
-        return False
-
-    def reveal_bonus(self):
-        if not (self.image.clue.allShown and self.image.clue.unshuffled):
-            self.image.clue.show_all()
-            if self.timer.time_bar.width > WARNING_TIME:
-                self.timer.remove_time(REVEAL_PENALTY)
-            if self.buttons['unshuffle'].active:
-                self.buttons['unshuffle'].toggle_active()
-            if self.buttons['more_letters'].active:
-                self.buttons['more_letters'].toggle_active()
-            return True
-        return False
-    
-class Bonus:
-    def __init__(self, bonus_function, counts):
-        self.func = bonus_function
-        self.counts = counts
-        self.original_counts = counts
-
-    def __call__(self):
-        if self.counts > 0:
-            applied = self.func()
-            if applied:
-                self.counts = self.counts - 1
-        return self.counts
-
-    def reset(self):
-        self.counts = self.original_counts
-
-#TODO: Implement cool transition effect
-class NextLevel(pyspy.states.GameState):
-    def __init__(self, gameScreen):
-        pyspy.states.GameState.__init__(self,gameScreen)
-        self.buttons = self.gameScreen.buttons
-        self.static_font = pygame.font.Font(
-                os.path.join('fonts',TEXT_FONT), 28)
-        self.gameScreen.static_text = self.static_font.render(
-                'I spy with my little eye, something beginning with:',\
-                        1,(221,255,33))
-        self.static_text = self.gameScreen.static_text
-        self.gameScreen.static_text_rect = self.static_text.get_rect()
-        self.static_text_rect = self.gameScreen.static_text_rect
-        self.drawn_once = False
-
-    def enter(self):
-        self.gameScreen.level += 1
-        self.level_exists = self.gameScreen.set_level(self.gameScreen.level)
-        self.image = self.gameScreen.image
-        self.delay = 1
-        pygame.mouse.set_visible(True)
-        self.init_layout()
-        
-
-    def update(self):
-        if not self.level_exists:
-            self.gameScreen.state = self.gameScreen.states['GameOver']
-            self.gameScreen.state.enter(1)
-            return
-        if self.delay == 0:
-            self.updateParent()
-            self.gameScreen.state = self.gameScreen.states['Playing']
-            self.gameScreen.state.enter()
-        else:
-            self.delay -= 1
-
-    def updateParent(self):
-        self.gameScreen.buttons = self.buttons
-        self.gameScreen.image = self.image
-        self.gameScreen.text_rect = self.text_rect
-        self.gameScreen.static_text_rect = self.static_text_rect
-
-    def eventHandle(self):
-        pyspy.states.GameState.eventHandle(self)
-
-    def init_layout(self):
-        # Set the image position
-        self.image = self.gameScreen.image
-        self.image.rect.topleft = (X_OFFSET, Y_OFFSET)
-        self.image.mask.rect.topleft = self.image.rect.topleft
-        if not self.drawn_once:
-            self.static_text_rect.topleft = self.image.rect.bottomleft
-            self.static_text_rect.centery += 5
-            self.text_rect = self.image.clue.image.get_rect()
-            self.text_rect.topleft = self.static_text_rect.bottomleft
-            self.buttons['unshuffle'].rect.topleft = \
-                self.image.rect.bottomleft
-            self.buttons['unshuffle'].rect.move_ip(0, 100)
-            self.buttons['more_letters'].rect.bottomleft = \
-                self.buttons['unshuffle'].rect.bottomright
-            self.buttons['more_letters'].rect.move_ip(20, 0)
-            self.buttons['reveal'].rect.bottomleft = \
-                self.buttons['more_letters'].rect.bottomright
-            self.buttons['reveal'].rect.move_ip(20, 0)
-            self.buttons['play'].rect.topleft = \
-                self.buttons['unshuffle'].rect.bottomleft
-            self.buttons['play'].rect.move_ip(0, 10)
-            self.buttons['pause'].rect.topleft = \
-                self.buttons['play'].rect.topright
-            self.buttons['pause'].rect.move_ip(5, 0)
-            self.buttons['next'].rect.topleft = \
-                self.buttons['pause'].rect.topright
-            self.buttons['next'].rect.move_ip(5, 0)
-            self.drawn_once = True
-
-    def draw(self, background, screen):
-        screen.blit(background, (0, 0))
-        screen.blit(self.image, self.image.rect)
-        screen.blit(self.static_text, self.static_text_rect)
-        screen.blit(self.image.clue.image, self.text_rect)
-        self.gameScreen.indicator.draw(self.gameScreen.level)
-        screen.blit(self.gameScreen.indicator, 
-                self.gameScreen.indicator.rect)
-
-        for button in self.buttons.values():
-            button.draw(background, screen)
-
-class GameOver(pyspy.states.GameState):
-    def __init__(self, gameScreen):
-        pyspy.states.GameState.__init__(self,gameScreen)
-        self.font = pygame.font.Font(os.path.join('fonts',TEXT_FONT), 50)
-        self.delay = 250
-        self.buttons = gameScreen.buttons
-        self.won_sound = SoundEffect(os.path.join('sounds', 'brass_fanfare_4.wav'))
-
-    def enter(self, won):
-        self.delay = 250
-        if won:
-            text = 'You have won!'
-            self.gameControl.music.pause_track()
-            self.won_sound.play()
-        else:
-            text = 'Game Over'
-
-        self.won = won
-        self.text = self.font.render(text, 1, (255,255,255),(0,0,80))
-        self.text.set_colorkey([0,0,80])
-
-        # Reset buttons TODO(need a way to separate bonus buttons and music
-        # control buttons)
-        self.buttons['unshuffle'].reset()
-        self.buttons['reveal'].reset()
-        self.buttons['more_letters'].reset()
-
-    def update(self):
-        if self.delay > 0:
-            self.delay -= 1
-        else:
-            self.gameControl.music.unpause_track()
-            self.gameControl.setMode(MAIN_MENU)
-
-    def eventHandle(self):
-        # Don't allow escaping to main menu from here.
-        #pyspy.states.GameState.eventHandle(self)
-        pass
-
-    def draw(self, background, screen):
-        screen.blit(background, (0,0))
-        rect = self.text.get_rect()
-        screen_rect = screen.get_rect()
-        rect.bottomleft = (screen_rect.width/2 - rect.width/2,
-                           screen_rect.height/2-rect.height/2)
-        if self.won:
-            rect.top += int(100*math.sin(self.delay*2*math.pi/40))
-        screen.blit(self.text, rect.bottomleft)
-
-#FIXME: These functions need a proper home
-def getLevels(path='levels'):
-    p = re.compile('^[a-zA-Z]+\.png')
-    levels = [pyspy.utilities.strip_ext(i) \
-        for i in os.listdir(path) if p.match(i)]
-    return levels
-
-def checkLevel(level, path='levels'):
-    return level+'.png' in os.listdir(path)
-    
 class GameScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
         self.level = 0
-        self.indicator = LevelIndicator((screenRect.width, screenRect.height))
+        self.indicator = pyspy.gui.LevelIndicator((screenRect.width, screenRect.height))
         self.images = []
-        levels = getLevels()
+        levels = pyspy.levels.getLevels()
         if not levels:
             #FIXME: Need to create custom Exception classes
             raise Exception, "No levels found"
         for i in levels:
-            if checkLevel(i):
+            if pyspy.levels.checkLevel(i):
                 self.images.append(SpyImage((640,480), i))
             else:
                 print "Generating level: %s" %(i)
                 pyspy.levels.generateLevel(i)
-        #self.images = [SpyImage((640,480), i) for i in levels \
-        #                    if checkLevel(i)]
-        self.buttons = {'unshuffle': Button('unshuffle'), 
-            'more_letters': Button('more_letters'),
-            'reveal': Button('reveal'),
-            'play': Button('play',
+        
+        self.buttons = {'unshuffle': pyspy.gui.Button('unshuffle'), 
+            'more_letters': pyspy.gui.Button('more_letters'),
+            'reveal': pyspy.gui.Button('reveal'),
+            'play': pyspy.gui.Button('play',
                 callback=self.gameControl.music.unpause_track),
-            'pause': Button('pause', callback=self.button_pause),
-            'next': Button('next',
+            'pause': pyspy.gui.Button('pause', callback=self.button_pause),
+            'next': pyspy.gui.Button('next',
                 callback=self.gameControl.music.next_track)}
-        self.states = {'NextLevel': NextLevel(self), 'Playing': Playing(self),
-            'GameOver': GameOver(self), 'Correct': Correct(self)}
+        self.states = {'NextLevel': pyspy.original.states.NextLevel(self),
+                       'Playing': pyspy.original.states.Playing(self),
+                       'GameOver': pyspy.original.states.GameOver(self),
+                       'Correct': pyspy.original.states.Correct(self)}
 
     def button_pause(self):
         if self.gameControl.music.paused:
@@ -835,65 +294,7 @@ class GameEvent:
             # Get the time
             self.ticks = pygame.time.get_ticks()
 
-class SoundEffect(pygame.mixer.Sound):
-    def __init__(self, path):
-        pygame.mixer.Sound.__init__(self, path)
-
-    def play(self):
-        if SOUND:
-            pygame.mixer.Sound.play(self)
-
-class MusicControl:
-    def __init__(self):
-        self.music_dir = 'music'
-        self.filenames = self.get_filenames()
-        self.filenames = [i for i in self.filenames if i.endswith('.mid')\
-                                                    or i.endswith('.ogg')]
-        self.current_track = 0
-        self.On = MUSIC
-        self.paused = 0
-
-    def get_filenames(self):
-        return os.listdir(self.music_dir)
-
-    def play_track(self, randomize = 1):
-        if self.On:
-            if len(self.filenames)-1 > 0:
-                if randomize:
-                    self.current_track = \
-                            random.randint(0, len(self.filenames)-1)
-                track = self.filenames[self.current_track]
-                pygame.mixer.music.load(os.path.join(self.music_dir,track))
-                pygame.mixer.music.play()
-            return True
-        return False
-
-    def unpause_track(self):
-        if self.paused:
-            pygame.mixer.music.unpause()
-            self.paused = 0
-        return True
-
-    def pause_track(self):
-        pygame.mixer.music.pause()
-        self.paused = 1
-        return True
-
-    def next_track(self, randomize = 1):
-        pygame.mixer.music.stop()
-        if self.current_track < len(self.filenames)-2:
-            if not randomize:
-                self.current_track += 1
-        else:
-            return False
-        self.play_track(randomize)
-        return True
-
-    def update(self):
-        if self.On:
-            if not pygame.mixer.music.get_busy():
-                self.play_track()
-        
+       
 
 class GameControl:
     def __init__(self):
@@ -902,7 +303,7 @@ class GameControl:
         self.modes = []
         self.players = []
         self.playerCur = 0
-        self.music = MusicControl()
+        self.music = pyspy.sound.MusicControl()
         return
 		
     def addMode(self, newMode):

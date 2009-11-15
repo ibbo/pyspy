@@ -1,4 +1,4 @@
-#This denotes that pySpy is a package
+#!/usr/bin/python
 #    This file is part of pySpy.
 #
 #    pySpy is free software: you can redistribute it and/or modify
@@ -13,18 +13,24 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
-
-import pyspy.images
-import pyspy.utilities
-import pyspy.clue
-import pyspy.timer
-import pyspy.menu
-import pyspy.levels
-import pyspy.update
-import pyspy.states
-import pyspy.original.states
-import pyspy.bonus
-import pyspy.sound
-import pyspy.effects
-import pyspy.gui
+import pygame
+import pyspy
+from pygame.locals import *
 from pyspy.constants import *
+
+class Bonus:
+    def __init__(self, bonus_function, counts):
+        self.func = bonus_function
+        self.counts = counts
+        self.original_counts = counts
+
+    def __call__(self):
+        if self.counts > 0:
+            applied = self.func()
+            if applied:
+                self.counts = self.counts - 1
+        return self.counts
+
+    def reset(self):
+        self.counts = self.original_counts
+
