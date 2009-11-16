@@ -27,7 +27,7 @@ import pyspy
 from pyspy.constants import *
 
 def parseLevelName(levelName):
-    p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+_)+)([0-9]+)')
+    p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+|#_)+)([0-9]+)')
     m = p.match(levelName)
     if m:
         parsedName = {'base_name': m.group(1), 'clue': m.group(2),

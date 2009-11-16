@@ -229,6 +229,14 @@ class Playing(pyspy.states.GameState):
         if game_over:
             self.gameScreen.state = self.gameScreen.states['GameOver']
             self.gameScreen.state.enter(0)
+        masks_left = False
+        for i in self.image.masks:
+            if not i.found:
+                masks_left = True
+        if not masks_left:
+            self.yipee_sound.play()
+            self.gameScreen.state = self.gameScreen.states['Correct']
+            self.gameScreen.state.enter()
 
     def eventHandle(self):
         pyspy.states.GameState.eventHandle(self)
@@ -241,9 +249,9 @@ class Playing(pyspy.states.GameState):
                 y = mousepos[1]-self.image.rect.top
                 for i in self.image.masks:
                     if i.mask.get_at((x,y)):
-                        self.yipee_sound.play()
-                        self.gameScreen.state = self.gameScreen.states['Correct']
-                        self.gameScreen.state.enter()
+                        if not i.found:
+                            i.found = True
+                            i.dirty = True
                     else:
                         self.timer.remove_time()
                         self.indicator.set_pos(mousepos[0], mousepos[1])
@@ -267,6 +275,10 @@ class Playing(pyspy.states.GameState):
         for button in self.buttons.values():
             if button.dirty:
                 button.draw(background, screen)
+        for mask in self.image.masks:
+            if mask.dirty:
+                screen.blit(mask.image, mask.spythis_rect, mask.mask_rect)
+                mask.dirty = False
 
     def reset(self):
         self.indicator.reset()
