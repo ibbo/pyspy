@@ -66,13 +66,14 @@ class SpyImage(pygame.Surface):
 class ImageInfo:
     def __init__(self, filename, path='levels'):
         self.basefile = filename
-        self.masks = self.initMasks(path)
         self.has_spythis = False
+        self.masks = self.initMasks(path)
         
     def initMasks(self, path):
         #levelList = getLevelList('levels')
         base_name = pyspy.utilities.strip_ext(self.basefile)
-        matches = [pyspy.levels.parseLevelName(i) for i in os.listdir(path) if base_name in i]
+        matches = [pyspy.levels.parseLevelName(i) \
+                    for i in os.listdir(path) if base_name in i]
         matches = [i for i in matches if i]
 
         masks = []
@@ -122,6 +123,10 @@ class ImageMask:
         outlines = [i for j in masks for i in j.outline(10)]
         dist = [math.sqrt((pos[0]-i[0])**2 +(pos[1]-i[1])**2) for i in outlines]
         return min(dist)
+
+    def reset(self):
+        self.found = False
+        self.dirty = False
 
 if __name__ == '__main__':
     i = ImageInfo('bookcase.png')

@@ -26,10 +26,10 @@ class Correct(pyspy.states.GameState):
         pyspy.states.GameState.__init__(self,gameScreen)
 
     def enter(self):
-        self.time_left = 100
+        self.time_left = CORRECT_TIME
         pygame.mouse.set_visible(False)
         self.image = self.gameScreen.image
-        self.image.set_alpha(127)
+        #self.image.set_alpha(127)
         self.drawn = 0
 
     def leave(self):
@@ -39,10 +39,12 @@ class Correct(pyspy.states.GameState):
     def update(self):
         if self.time_left > 0:
             self.time_left -= 1
+            new_alpha = 255/CORRECT_TIME*self.time_left
+            self.image.set_alpha(new_alpha)
         elif self.time_left == 0:
+            self.leave()
             self.gameScreen.state = self.gameScreen.states['NextLevel']
             self.gameScreen.state.enter()
-            self.leave()
         else:
             raise ValueError('time_left cannot be negative')
 
@@ -50,24 +52,14 @@ class Correct(pyspy.states.GameState):
         pyspy.states.GameState.eventHandle(self)
 
     def draw(self, background, screen):
+        screen.blit(background, self.image.rect, self.image.rect)
+        screen.blit(self.image, (X_OFFSET, Y_OFFSET))
         if not self.drawn:
-            screen.blit(background, self.image.rect, self.image.rect)
-            screen.blit(self.image, (X_OFFSET, Y_OFFSET))
-            # All this code is to convert the binary mask into an area of
-            # the image rect and blit it to the screen.
-            self.image.set_alpha(255)
-            new, brects = self.gameScreen.image_from_mask(self.image.mask)
-            for brect in brects:
-                posrect = Rect(brect)
-                posrect.top += Y_OFFSET
-                posrect.left += X_OFFSET
-                screen.blit(new, posrect, brect)
+            for mask in self.image.masks:
+                if mask.dirty:
+                    screen.blit(background, mask.spythis_rect, mask.spythis_rect)
+                    mask.dirty = False
             self.drawn = 1
-            if DEBUG and DEBUG_DRAW_OUTLINE:
-                for i in brects:
-                    i.left = i.left + X_OFFSET
-                    i.top = i.top + Y_OFFSET
-                    pygame.draw.rect(screen, (255,255,255),i,2)
 
 class GameOver(pyspy.states.GameState):
     def __init__(self, gameScreen):
@@ -125,27 +117,40 @@ class NextLevel(pyspy.states.GameState):
         self.buttons['reveal'] = pyspy.gui.Button('reveal')
         self.gameScreen.buttons = self.buttons
         self.drawn_once = False
+        self.draw_last = False
 
     def enter(self):
         self.gameScreen.level += 1
-        self.level_exists = self.gameScreen.set_level(self.gameScreen.level)
-        self.image = self.gameScreen.image
-        self.delay = 1
-        pygame.mouse.set_visible(True)
-        self.init_layout()
-        
-
-    def update(self):
-        if not self.level_exists:
+        if self.gameScreen.level > 10:
+            self.leave()
             self.gameScreen.state = self.gameScreen.states['GameOver']
             self.gameScreen.state.enter(1)
             return
+        self.level_exists = self.gameScreen.set_level(self.gameScreen.level)
+        self.image = self.gameScreen.image
+        self.image.set_alpha(0)
+        self.delay = FADE_IN_TIME
+        pygame.mouse.set_visible(True)
+        self.init_layout()
+        self.drawn_once = False
+        self.draw_last = False
+
+    def leave(self):
+        self.image.set_alpha(255)
+        self.drawn_once = False
+
+    def update(self):
         if self.delay == 0:
+            self.leave()
             self.updateParent()
             self.gameScreen.state = self.gameScreen.states['Playing']
             self.gameScreen.state.enter()
+        elif self.delay == 1:
+            self.draw_last = True
+            self.delay -= 1
         else:
             self.delay -= 1
+        self.image.set_alpha(255 - 255/FADE_IN_TIME*self.delay)
 
     def updateParent(self):
         self.gameScreen.buttons = self.buttons
@@ -159,13 +164,17 @@ class NextLevel(pyspy.states.GameState):
         self.image = self.gameScreen.image
         self.image.rect.topleft = (X_OFFSET, Y_OFFSET)
         last = self.image.rect.bottomleft
+        bottoms = []
         for i in self.image.masks:
             i.rect.topleft = self.image.rect.topleft
             i.spythis_rect.topleft = last
+            bottoms.append(i.spythis_rect.bottom)
             last = i.spythis_rect.topright
         if not self.drawn_once:
-            self.buttons['reveal'].rect.topleft = \
-                self.image.masks[0].spythis_rect.bottomleft
+            self.buttons['reveal'].rect.left = \
+                self.image.masks[0].spythis_rect.left
+            self.buttons['reveal'].rect.top = \
+                max(bottoms)
             self.buttons['reveal'].rect.move_ip(0, 5)
             self.buttons['play'].rect.topleft = \
                 self.buttons['reveal'].rect.bottomleft
@@ -176,20 +185,24 @@ class NextLevel(pyspy.states.GameState):
             self.buttons['next'].rect.topleft = \
                 self.buttons['pause'].rect.topright
             self.buttons['next'].rect.move_ip(5, 0)
-            self.drawn_once = True
 
     def draw(self, background, screen):
-        screen.blit(background, (0, 0))
+        screen.blit(background, self.image.rect, self.image.rect)
         screen.blit(self.image, self.image.rect)
-        self.gameScreen.indicator.draw(self.gameScreen.level)
-        screen.blit(self.gameScreen.indicator, 
+        if not self.drawn_once:
+            screen.blit(background, (0,0))
+            screen.blit(self.image, self.image.rect)
+            self.gameScreen.indicator.draw(self.gameScreen.level)
+            screen.blit(self.gameScreen.indicator, 
                 self.gameScreen.indicator.rect)
-        for i in self.image.masks:
-            new, brects = self.gameScreen.image_from_mask(i)
-            screen.blit(new, i.spythis_rect, i.mask_rect)
-
-        for button in self.buttons.values():
-            button.draw(background, screen)
+            for button in self.buttons.values():
+                button.draw(background, screen)
+            self.drawn_once = True
+        if self.draw_last:
+            for i in self.image.masks:
+                new, brects = self.gameScreen.image_from_mask(i)
+                screen.blit(new, i.spythis_rect, i.mask_rect)
+            self.draw_last = False
 
 class Playing(pyspy.states.GameState):
     def __init__(self, gameScreen):
@@ -202,6 +215,10 @@ class Playing(pyspy.states.GameState):
         self.yipee_sound = pyspy.sound.SoundEffect(
                 os.path.join('sounds', 'yipee.wav'))
         self.indicator = pyspy.effects.DistanceIndicator()
+        self.draw_tick = False
+        self.tick_timer = TICK_TIME
+        self.tick, self.tick_rect = pyspy.utilities.load_png('tick')
+        self.clear_tick = False
 
     def enter(self):
         self.image = self.gameScreen.image
@@ -225,6 +242,14 @@ class Playing(pyspy.states.GameState):
         
     def update(self):
         self.indicator.update()
+        if self.draw_tick:
+            if self.tick_timer > 0:
+                self.tick_timer -= 1
+            else:
+                self.draw_tick = False
+                self.tick_timer = TICK_TIME
+                self.tick.set_alpha(255)
+                self.clear_tick = True
         game_over = self.timer.update()
         if game_over:
             self.gameScreen.state = self.gameScreen.states['GameOver']
@@ -247,19 +272,28 @@ class Playing(pyspy.states.GameState):
             if self.image.rect.collidepoint(mousepos):
                 x = mousepos[0]-self.image.rect.left
                 y = mousepos[1]-self.image.rect.top
+                distances = []
+                found_mask = False
                 for i in self.image.masks:
                     if i.mask.get_at((x,y)):
                         if not i.found:
                             i.found = True
                             i.dirty = True
+                            found_mask = True
                     else:
-                        self.timer.remove_time()
-                        self.indicator.set_pos(mousepos[0], mousepos[1])
-                        # Need to set the colour of the indicator based on the
-                        # distance away from the object to find. 
-                        distance = self.image.mask.get_distance((x,y))
-                        self.indicator.set_colour(distance)
-                        self.indicator.show = True
+                        distances.append(i.get_distance((x,y)))
+                if not found_mask:
+                    self.timer.remove_time()
+                    self.indicator.set_pos(mousepos[0], mousepos[1])
+                    # Need to set the colour of the indicator based on the
+                    # distance away from the object to find.
+                    self.indicator.set_colour(min(distances))
+                    self.indicator.show = True
+                else:
+                    self.draw_tick = True
+                    self.tick_rect.center = \
+                            (mousepos[0]+TICK_X_OFFSET,
+                                    mousepos[1]+TICK_Y_OFFSET)
             else:
                 for button in self.buttons.values():
                     if button.rect.collidepoint(mousepos) and button.active:
@@ -270,18 +304,42 @@ class Playing(pyspy.states.GameState):
         timer_rect = self.timer.get_rect()
         timer_rect.topleft = (X_OFFSET,10)
         screen.blit(background, timer_rect, timer_rect)
+        pos_rect = Rect(self.tick_rect)
+        pos_rect.left += X_OFFSET
+        pos_rect.top += Y_OFFSET
+        blit_rect = Rect(self.tick_rect)
+        blit_rect.left -= X_OFFSET
+        blit_rect.top -= Y_OFFSET
         screen.blit(self.timer, timer_rect)
+        if self.draw_tick:
+            screen.blit(background, self.tick_rect, self.tick_rect)
+            screen.blit(self.image, self.tick_rect, blit_rect)
+            # TODO: try using surfarrays to do this
+            # This will require numpy, but if numpy isn't available
+            # do the current thing instead.
+            #new_alpha = 255/TICK_TIME*self.tick_timer
+            #self.tick.set_alpha(new_alpha)
+            screen.blit(self.tick, self.tick_rect)
+        elif self.clear_tick:
+            screen.blit(background, self.tick_rect, self.tick_rect)
+            screen.blit(self.image, self.tick_rect, blit_rect)
+
         # Re-draw dirty rects
         for button in self.buttons.values():
             if button.dirty:
                 button.draw(background, screen)
         for mask in self.image.masks:
             if mask.dirty:
-                screen.blit(mask.image, mask.spythis_rect, mask.mask_rect)
+                screen.blit(background, mask.spythis_rect, mask.spythis_rect)
                 mask.dirty = False
 
     def reset(self):
         self.indicator.reset()
+        self.masks_left = False
+        self.draw_tick = False
+        if self.image:
+            for mask in self.image.masks:
+                mask.reset()
         for i in self.buttons.values():
             #FIXME: Need different class for bonus buttons
             if hasattr(i.callback, 'counts'):
@@ -289,7 +347,11 @@ class Playing(pyspy.states.GameState):
                     i.toggle_active()
         
     def reveal_bonus(self):
-        #TODO: implement a reveal bonus for spyThis
+        for i in self.image.masks:
+            if not i.found:
+                i.found = True
+                i.dirty = True
+                break
         if self.timer.time_bar.width > WARNING_TIME:
             self.timer.remove_time(REVEAL_PENALTY)
         return True
