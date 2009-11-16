@@ -133,6 +133,7 @@ class GameScreen:
         self.level = 0
         self.indicator = pyspy.gui.LevelIndicator((screenRect.width, screenRect.height))
         self.images = []
+        self.spythis = True
         levels = pyspy.levels.getLevels()
         if not levels:
             #FIXME: Need to create custom Exception classes
@@ -172,8 +173,12 @@ class GameScreen:
     def set_level(self, level):
         valid_images = []
         for i in self.images:
-            if level in i.levels:
-                valid_images.append(i)
+            if self.spythis:
+                if i.has_spythis:
+                    valid_images.append(i)
+            else:
+                if level in i.levels:
+                    valid_images.append(i)
 
         if valid_images:
             self.set_image(valid_images[random.randint(0,len(valid_images)-1)])

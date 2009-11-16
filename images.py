@@ -24,8 +24,6 @@ import pyspy
 from pygame.locals import *
 from pyspy.constants import *
 
-import pdb
-
 class SpyImage(pygame.Surface):
     def __init__(self,size,name):
         pygame.Surface.__init__(self,size)
@@ -59,10 +57,11 @@ class SpyImage(pygame.Surface):
         random.shuffle(self.info.masks)
         if len(self.info.masks) > 0:
             self.masks = self.info.masks[:5]
+            return True
         else:
             self.mask = []
             print "No levels found"
-            return None
+            return False
 
 class ImageInfo:
     def __init__(self, filename, path='levels'):
