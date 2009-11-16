@@ -281,7 +281,8 @@ class Playing(pyspy.states.GameState):
                             i.dirty = True
                             found_mask = True
                     else:
-                        distances.append(i.get_distance((x,y)))
+                        if not i.found:
+                            distances.append(i.get_distance((x,y)))
                 if not found_mask:
                     self.timer.remove_time()
                     self.indicator.set_pos(mousepos[0], mousepos[1])
@@ -300,7 +301,6 @@ class Playing(pyspy.states.GameState):
                         button()
                         
     def draw(self, background, screen):
-        self.indicator.draw(background, screen, self.image)
         timer_rect = self.timer.get_rect()
         timer_rect.topleft = (X_OFFSET,10)
         screen.blit(background, timer_rect, timer_rect)
@@ -332,6 +332,9 @@ class Playing(pyspy.states.GameState):
             if mask.dirty:
                 screen.blit(background, mask.spythis_rect, mask.spythis_rect)
                 mask.dirty = False
+
+        # Draw the distance indicator
+        self.indicator.draw(background, screen, self.image)
 
     def reset(self):
         self.indicator.reset()
