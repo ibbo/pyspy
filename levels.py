@@ -112,8 +112,8 @@ def downloadUpdates(updateList, url=SERVER_URL,
     for i in updateList:
         status.set_file(i)
         try:
-            urllib.urlretrieve(url+'/'+remotePath+'/'+i,
-                                os.path.join(localPath,i), status)
+            urlToLevel = urllib.pathname2url(os.path.join(remotePath,i))
+            urllib.urlretrieve(url+urlToLevel, os.path.join(localPath,i), status)
         finally:
             status.quit()
     status.quit()
