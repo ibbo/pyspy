@@ -62,9 +62,9 @@ TICK_Y_OFFSET = -24
 MUSIC = 1
 SOUND = 1
 # Code control
-DEBUG = True
+DEBUG = False
 DEBUG_DRAW_OUTLINE = True
 if DEBUG:
     REVEALS = 1000
 # Server address
-SERVER_URL = 'http://pyspygame.sourceforge.net/levels/'
+SERVER_URL = 'http://pyspygame.sourceforge.net/'

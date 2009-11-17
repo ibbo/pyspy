@@ -45,9 +45,9 @@ def getLevels(path='levels'):
 def checkLevel(level, path='levels'):
     return level+'.png' in os.listdir(path)
 
-def checkForUpdates(url=SERVER_URL, path='levels'):
+def checkForUpdates(url=SERVER_URL, localPath='levels', remotePath='levels'):
     opener = urllib.FancyURLopener({})
-    f = opener.open(url+'levels.md5')
+    f = opener.open(url+'/'+remotePath+'/'+'levels.md5')
     levels = f.readlines()
     f.close()
     updateList = []
@@ -56,7 +56,7 @@ def checkForUpdates(url=SERVER_URL, path='levels'):
         m = hashlib.md5()
         remoteHash = i.split()
         try:
-            localFile = open(os.path.join(path,remoteHash[1]), 'r')
+            localFile = open(os.path.join(localPath,remoteHash[1]), 'r')
         except IOError:
             # If there's an IOError we assume the file doesn't exist and
             # that there's a new level on the server. So add it to the list
@@ -106,12 +106,14 @@ class DownloadStatus:
         if os.name != 'nt':
             curses.endwin()
 
-def downloadUpdates(updateList, url=SERVER_URL, path='levels'):
+def downloadUpdates(updateList, url=SERVER_URL,
+                        localPath='levels', remotePath='levels'):
     status = DownloadStatus()
     for i in updateList:
         status.set_file(i)
         try:
-            urllib.urlretrieve(url+i, os.path.join(path,i), status)
+            urllib.urlretrieve(url+'/'+remotePath+'/'+i,
+                                os.path.join(localPath,i), status)
         finally:
             status.quit()
     status.quit()
