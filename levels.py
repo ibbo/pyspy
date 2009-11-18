@@ -98,6 +98,7 @@ class DownloadStatus:
 
     def update(self, percent):
         if os.name != 'nt':
+            self.stdscr.erase()
             self.stdscr.addstr(0,0, "Downloading %s: %.1f percent complete"
                 % (self.filename, percent))
             self.stdscr.refresh()
