@@ -25,6 +25,8 @@ if os.name != 'nt':
     import curses
 import pyspy
 from pyspy.constants import *
+import pygame
+from pygame.locals import *
 
 def parseLevelName(levelName):
     p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+_)+)([0-9]+)')
@@ -106,8 +108,53 @@ class DownloadStatus:
         if os.name != 'nt':
             curses.endwin()
 
-def downloadUpdates(updateList, url=SERVER_URL, path='levels'):
-    status = DownloadStatus()
+class GUIDownloadStatus(DownloadStatus):
+    def __init__(self):
+        self.text_font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 16)
+        self.set_text('Checking for updates')
+        self.width = 400
+        self.height = 30
+        self.progress_bar = pyspy.gui.ProgressBar(400, 30)
+        self.rect = Rect(0,0,400,60)
+        self.background = []
+        self.screen = []
+
+    def update(self, percent):
+        self.progress_bar.update(percent)
+        self.percent = percent
+        self.draw()
+
+    def set_drawables(self, background, screen):
+        self.background = background
+        self.screen = screen
+
+    def set_text(self, text):
+        self.text = self.text_font.render(text, 1, pygame.Color('black'),
+                pygame.Color('white'))
+    
+    def set_file(self, filename):
+        self.set_text('Downloading %s' %filename)
+
+    def quit(self):
+        pass
+
+    def reset(self):
+        self.percent = 0
+
+    def draw(self):
+        if self.background and self.screen:
+            self.screen.blit(self.background, self.rect, self.rect)
+            self.screen.blit(self.text, self.rect)
+            progress_rect = Rect(self.rect)
+            progress_rect.top += 30
+            if self.percent:
+                self.screen.blit(self.progress_bar, progress_rect) 
+            pygame.display.flip()
+
+
+def downloadUpdates(updateList, url=SERVER_URL, path='levels',
+        statusObj=None):
+    status = statusObj
     for i in updateList:
         status.set_file(i)
         try:

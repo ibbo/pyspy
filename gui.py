@@ -83,10 +83,12 @@ class Button:
 
     def __call__(self):
         if self.callback:
-            val = self.callback()
-            if not val:
-                self.active = False
-            self.dirty = True
+            if self.active:
+                #FIXME: This is BAD, very, very BAD
+                val = self.callback()
+                if not val:
+                    self.active = False
+                self.dirty = True
 
     def reset(self):
         # FIXME: This is a hack to fix this there should be different types
@@ -114,4 +116,19 @@ class Button:
             text = self.font.render("%d" %(self.callback.counts), 1,
                                             BONUS_COUNT_COLOUR)
             screen.blit(text, (self.rect.x + 15, self.rect.bottom - 30))
+
+class ProgressBar(pygame.Surface):
+    def __init__(self, width, height, color=(211,255,200)):
+        pygame.Surface.__init__(self, (width, height), pygame.SRCALPHA)
+        self.width = width
+        self.height = height
+        self.percent = 0
+        self.color = color
+        self.rect = self.get_rect()
+
+    def update(self, percent):
+        self.percent = percent
+        self.fill((0,0,0,0))
+        pygame.draw.rect(self, self.color, 
+                pygame.Rect(0,0,self.percent/100*self.width, self.height))
 

@@ -27,7 +27,7 @@ class StartScreen:
         move_sound = pyspy.sound.SoundEffect(
                         os.path.join('sounds','menu_move.wav'))
         self.menu = pyspy.menu.Menu(
-                ["Play Game", "Instructions", "Quit"], move_sound)
+                ["Play Game", "Instructions", "Update levels", "Quit"], move_sound)
         self.firstDraw = 1
 
     def reset(self, type):
@@ -52,6 +52,7 @@ class StartScreen:
             self.menu.selectNext("up")
 
         # Process current selection
+        # FIXME: Checking the menu item strings is a bad idea.
         if self.gameControl.gameEvent.newkeys[K_RETURN] or \
             self.gameControl.gameEvent.newkeys[K_KP_ENTER] or \
                 self.gameControl.gameEvent.mouseButtons[0]:
@@ -59,6 +60,8 @@ class StartScreen:
                 self.gameControl.setMode(GAME)
             if self.menu.selectedItem.text == "Instructions":
                 self.gameControl.setMode(INSTRUCTIONS)
+            if self.menu.selectedItem.text == "Update levels":
+                self.gameControl.setMode(UPDATE)
             if self.menu.selectedItem.text == "Quit":
                 self.gameControl.setMode(QUIT)
 
@@ -74,6 +77,81 @@ class StartScreen:
         self.menu.setPositions(background.get_rect())
         #Draw Everything
         self.menu.draw(background, screen)
+
+class UpdateScreen:
+    def __init__(self, gameControlObj, screenRect):
+        self.gameControl = gameControlObj
+        self.text_font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 16)
+        self.back_button = pyspy.gui.Button('back', can_disable=False)
+        self.back_button.set_callback(self.quit)
+        self.back_button.rect.topright = screenRect.topright
+        self.back_button.rect.top += 210
+        self.back_button.rect.right -= 45
+        self.downloading = False
+        self.download_button = pyspy.gui.Button('download')
+        self.download_button.set_callback(self.download)
+        self.path = ''
+        self.drawn = 0
+        self.checked = 0
+        self.updatesAvailable = False
+        self.status = pyspy.levels.GUIDownloadStatus()
+        self.status.rect.center = screenRect.center
+        self.download_button.rect.centerx = self.status.rect.centerx
+        self.download_button.rect.top = self.status.rect.bottom + 5
+
+    def checkForUpdates(self, path):
+        if path:
+            updates = pyspy.levels.checkForUpdates(path=path)
+        else:
+            updates = pyspy.levels.checkForUpdates()
+        return updates
+
+    def update(self):
+        if not self.checked:
+            self.updates = self.checkForUpdates(self.path)
+            self.checked = True
+            if self.updates:
+                self.status.set_text('Updates available')
+            else:
+                self.status.set_text('No updates available at this time')
+
+    def download(self):
+        self.downloading = True
+        if self.updates:
+            pyspy.levels.downloadUpdates(self.updates, statusObj=self.status)
+            self.status.set_text('All updates downloaded, enjoy!')
+            self.download_button.active = False
+        return True
+
+    def reset(self, type):
+        self.drawn = 0
+        self.checked = 0
+        self.status.reset()
+
+    def quit(self):
+        self.gameControl.setMode(MAIN_MENU)
+        return True
+
+    def eventHandle(self):
+        if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
+            self.gameControl.setMode(MAIN_MENU)
+        mousepos = self.gameControl.gameEvent.mousePos
+        if self.gameControl.gameEvent.mouseButtons[0]:
+            if self.back_button.rect.collidepoint(mousepos):
+                self.back_button()
+            if self.download_button.rect.collidepoint(mousepos):
+                self.download_button()
+
+    def draw(self, background, screen):
+        if not self.drawn:
+            screen.blit(background, (0,0))
+            self.back_button.draw(background, screen)
+            self.status.set_drawables(background, screen)
+            self.drawn = True
+        else:
+            self.status.draw()
+            if self.updates:
+                self.download_button.draw(background, screen)
 
 class InstructionsScreen:
     def __init__(self, gameControlObj, screenRect):
@@ -125,7 +203,7 @@ class InstructionsScreen:
                 screen.blit(i, (50, 50 + count*22))
                 count += 1
             self.back_button.draw(background, screen)
-        self.drawn = 1
+            self.drawn = 1
 
 class GameScreen:
     def __init__(self, gameControlObj, screenRect):
@@ -136,7 +214,8 @@ class GameScreen:
         levels = pyspy.levels.getLevels()
         if not levels:
             #FIXME: Need to create custom Exception classes
-            raise Exception, "No levels found"
+            #raise Exception, "No levels found"
+            pass
         for i in levels:
             if pyspy.levels.checkLevel(i):
                 self.images.append(pyspy.images.SpyImage((640,480), i))

@@ -166,6 +166,8 @@ def main(argv):
             pyspy.screens.GameScreen(gameControl, screen.get_rect()))
     gameControl.addMode(
             pyspy.screens.InstructionsScreen(gameControl, screen.get_rect()))
+    gameControl.addMode(
+            pyspy.screens.UpdateScreen(gameControl, screen.get_rect()))
 
     while 1:
         # Lock the framerate

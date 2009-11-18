@@ -25,7 +25,8 @@ def update():
     Returns false if no updates were available"""
     updates = pyspy.levels.checkForUpdates()
     if updates:
-        pyspy.levels.downloadUpdates(updates)
+        status = pyspy.levels.DownloadStatus()
+        pyspy.levels.downloadUpdates(updates, statusObj=status)
         return True
     else:
         return False
