@@ -129,8 +129,7 @@ class GUIDownloadStatus(DownloadStatus):
         self.screen = screen
 
     def set_text(self, text):
-        self.text = self.text_font.render(text, 1, pygame.Color('black'),
-                pygame.Color('white'))
+        self.text = self.text_font.render(text, 1, pygame.Color('black'))
     
     def set_file(self, filename):
         self.set_text('Downloading %s' %filename)
@@ -144,11 +143,14 @@ class GUIDownloadStatus(DownloadStatus):
     def draw(self):
         if self.background and self.screen:
             self.screen.blit(self.background, self.rect, self.rect)
-            self.screen.blit(self.text, self.rect)
+            pygame.draw.rect(self.screen, pygame.Color('white'), self.rect)
+            pygame.draw.rect(self.screen, pygame.Color('black'), self.rect, 3)
+            self.text_rect = Rect(self.rect)
+            self.text_rect.move_ip(5,7)
+            self.screen.blit(self.text, self.text_rect)
             progress_rect = Rect(self.rect)
             progress_rect.top += 30
-            if self.percent:
-                self.screen.blit(self.progress_bar, progress_rect) 
+            self.screen.blit(self.progress_bar, progress_rect) 
             pygame.display.flip()
 
 

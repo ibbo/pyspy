@@ -131,4 +131,6 @@ class ProgressBar(pygame.Surface):
         self.fill((0,0,0,0))
         pygame.draw.rect(self, self.color, 
                 pygame.Rect(0,0,self.percent/100*self.width, self.height))
+        pygame.draw.rect(self, pygame.Color('black'),
+                pygame.Rect(0,0,self.width,self.height),3)
 
