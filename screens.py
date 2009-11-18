@@ -114,6 +114,8 @@ class UpdateScreen:
                 self.status.set_text('Updates available')
             else:
                 self.status.set_text('No updates available at this time')
+            #TODO: Check whether this is the best place for this.
+            self.gameControl.updated = False
 
     def download(self):
         self.downloading = True
@@ -121,6 +123,7 @@ class UpdateScreen:
             pyspy.levels.downloadUpdates(self.updates, statusObj=self.status)
             self.status.set_text('All updates downloaded, enjoy!')
             self.download_button.active = False
+            self.gameControl.updated = True
         return True
 
     def reset(self, type):
@@ -209,20 +212,10 @@ class GameScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
         self.level = 0
+        self.loaded = False
         self.indicator = pyspy.gui.LevelIndicator((screenRect.width, screenRect.height))
         self.images = []
-        levels = pyspy.levels.getLevels()
-        if not levels:
-            #FIXME: Need to create custom Exception classes
-            #raise Exception, "No levels found"
-            pass
-        for i in levels:
-            if pyspy.levels.checkLevel(i):
-                self.images.append(pyspy.images.SpyImage((640,480), i))
-            else:
-                print "Generating level: %s" %(i)
-                pyspy.levels.generateLevel(i)
-        
+                
         self.buttons = {'unshuffle': pyspy.gui.Button('unshuffle'), 
             'more_letters': pyspy.gui.Button('more_letters'),
             'reveal': pyspy.gui.Button('reveal'),
@@ -270,8 +263,25 @@ class GameScreen:
         self.level = 0
         for button in self.buttons.values():
             button.reset()
-        self.state = self.states['NextLevel']
-        self.state.enter()
+        # The user may have updated their levels, so need to check them
+        # again.
+        if self.gameControl.updated or self.loaded == False:
+            self.levels = pyspy.levels.getLevels()
+            self.images = []
+            for i in self.levels:
+                if pyspy.levels.checkLevel(i):
+                    self.images.append(pyspy.images.SpyImage((640,480), i))
+                else:
+                    print "Generating level: %s" %(i)
+                    pyspy.levels.generateLevel(i)
+            self.loaded = True
+
+        if self.levels:
+            self.state = self.states['NextLevel']
+            self.state.enter()
+        else:
+            print "No levels found"
+            self.gameControl.setMode(MAIN_MENU)
 
     def draw(self, background, screen):
         self.state.draw(background, screen)

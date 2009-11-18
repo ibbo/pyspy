@@ -33,6 +33,7 @@ class GameControl:
         self.modes = []
         self.players = []
         self.playerCur = 0
+        self.updated = False
         self.music = pyspy.sound.MusicControl()
         return
 		
