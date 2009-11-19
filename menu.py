@@ -106,7 +106,10 @@ class Menu:
                         j.deselect()
                     i.select()
                     self.selectedItem = i
-                return
+                return True
+        
+        return False
+                
         
     def selectNext(self, direction="down"):
         if direction == "down":

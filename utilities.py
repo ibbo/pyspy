@@ -46,7 +46,7 @@ def load_png(name, rootpath='images'):
             image = image.convert_alpha()
     except pygame.error, message:
             print 'Cannot load image:', fullname
-            raise SystemExit, message
+            print message
     return image, image.get_rect()
 
 def fireRGB():

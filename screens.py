@@ -37,9 +37,8 @@ class StartScreen:
         return
 
     def eventHandle(self):
-        if self.gameControl.gameEvent.mouseMoved:
-            mousepos = self.gameControl.gameEvent.mousePos
-            self.menu.collide(mousepos)
+        mousepos = self.gameControl.gameEvent.mousePos
+        
         # Check for quit
         if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
             self.gameControl.setMode(QUIT)
@@ -53,9 +52,11 @@ class StartScreen:
 
         # Process current selection
         # FIXME: Checking the menu item strings is a bad idea.
+        collided = self.menu.collide(mousepos)
         if self.gameControl.gameEvent.newkeys[K_RETURN] or \
             self.gameControl.gameEvent.newkeys[K_KP_ENTER] or \
-                self.gameControl.gameEvent.mouseButtons[0]:
+                (self.gameControl.gameEvent.mouseButtons[0] and \
+                    collided):
             if self.menu.selectedItem.text == "Play Game":
                 self.gameControl.setMode(GAME)
             if self.menu.selectedItem.text == "Instructions":
