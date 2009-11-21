@@ -21,4 +21,12 @@ import pyspy.timer
 import pyspy.menu
 import pyspy.levels
 import pyspy.update
+import pyspy.states
+import pyspy.original.states
+import pyspy.bonus
+import pyspy.sound
+import pyspy.effects
+import pyspy.gui
+import pyspy.events
+import pyspy.screens
 from pyspy.constants import *

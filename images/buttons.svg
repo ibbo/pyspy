@@ -29,15 +29,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.99166667"
-     inkscape:cx="244.81106"
+     inkscape:cx="367.12288"
      inkscape:cy="839.2523"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g2916"
      showgrid="false"
      inkscape:window-width="1066"
      inkscape:window-height="724"
-     inkscape:window-x="314"
-     inkscape:window-y="108"
+     inkscape:window-x="182"
+     inkscape:window-y="72"
      inkscape:window-maximized="0" />
   <defs
      id="defs4">
@@ -219,6 +219,15 @@
        inkscape:collect="always"
        xlink:href="#linearGradient3045"
        id="linearGradient2929"
+       gradientUnits="userSpaceOnUse"
+       x1="124.28571"
+       y1="130.93361"
+       x2="232.85715"
+       y2="45.21933" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3045"
+       id="linearGradient2924"
        gradientUnits="userSpaceOnUse"
        x1="124.28571"
        y1="130.93361"
@@ -528,6 +537,60 @@
            x="365.71429"
            y="138.07648"
            id="tspan2943">menu</tspan></text>
+    </g>
+    <path
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/ibbo/Programming/pyspy_trunk/pyspy/images/download.png"
+       id="path2902"
+       d="m 586.01643,80.077485 60.90831,0 c 23.00673,0 41.5284,18.52165 41.5284,41.528395 0,23.00673 -18.52167,41.5284 -41.5284,41.5284 l -60.90831,0 c -23.00672,0 -41.52839,-18.52167 -41.52839,-41.5284 0,-23.006745 18.52167,-41.528395 41.52839,-41.528395 z"
+       style="fill:#f9f9f9;fill-opacity:1;stroke:none" />
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/ibbo/Programming/pyspy_trunk/pyspy/images/download.png"
+       id="g2904"
+       transform="matrix(0.7751967,0,0,0.7751967,485.65382,44.965802)">
+      <path
+         style="fill:url(#linearGradient2924);fill-opacity:1;stroke:none"
+         d="m 129.28571,45.219331 78.57142,0 c 29.67857,0 53.57143,23.89285 53.57143,53.57143 0,29.678569 -23.89286,53.571429 -53.57143,53.571429 l -78.57142,0 c -29.678568,0 -53.571426,-23.89286 -53.571426,-53.571429 0,-29.67858 23.892858,-53.57143 53.571426,-53.57143 z"
+         id="path2906" />
+      <g
+         transform="translate(1.4285714,-58.571429)"
+         clip-path="url(#clipPath)"
+         id="g2908">
+        <g
+           id="g2910">
+          <path
+             style="fill:none;stroke:#ffffff;stroke-width:10;stroke-opacity:1;filter:url(#filter)"
+             d="m 127.85714,103.79076 78.57142,0 m 0,0 c 29.67857,0 53.57143,23.89285 53.57143,53.57143 m -185.714277,0 c 0,-29.67858 23.892858,-53.57143 53.571427,-53.57143"
+             id="path2912" />
+          <path
+             style="fill:none;stroke:#000000;stroke-width:10;stroke-opacity:1;filter:url(#filter)"
+             d="m 259.99999,157.36219 c 0,29.67857 -23.89286,53.57143 -53.57143,53.57143 m 0,0 -78.57142,0 m 0,0 c -29.678569,0 -53.571427,-23.89286 -53.571427,-53.57143"
+             id="path2914" />
+        </g>
+      </g>
+    </g>
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/ibbo/pyspy/images/back.png"
+       transform="matrix(0.7751967,0,0,0.7751967,331.72189,36.660129)"
+       id="g2916">
+      <text
+         id="text2918"
+         y="120.77066"
+         x="365.71429"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         xml:space="preserve"
+         inkscape:export-filename="/home/ibbo/Programming/pyspy_trunk/pyspy/images/download.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90"><tspan
+           id="tspan2922"
+           y="120.77066"
+           x="365.71429"
+           sodipodi:role="line">Download</tspan></text>
     </g>
   </g>
 </svg>

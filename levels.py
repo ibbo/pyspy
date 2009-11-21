@@ -25,6 +25,8 @@ if os.name != 'nt':
     import curses
 import pyspy
 from pyspy.constants import *
+import pygame
+from pygame.locals import *
 
 def parseLevelName(levelName):
     p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+_)+)([0-9]+)')
@@ -35,6 +37,15 @@ def parseLevelName(levelName):
         return parsedName
     else:
         return None
+
+def getLevels(path='levels'):
+    p = re.compile('^[a-zA-Z]+\.png')
+    levels = [pyspy.utilities.strip_ext(i) \
+        for i in os.listdir(path) if p.match(i)]
+    return levels
+
+def checkLevel(level, path='levels'):
+    return level+'.png' in os.listdir(path)
 
 def checkForUpdates(url=SERVER_URL, path='levels'):
     opener = urllib.FancyURLopener({})
@@ -54,9 +65,9 @@ def checkForUpdates(url=SERVER_URL, path='levels'):
             # of updates to be downloaded.
             parsedName = parseLevelName(remoteHash[1])
             if not parsedName:
-                print "New level available: %s" %(remoteHash[1])
+                print "New image available: %s" %(remoteHash[1])
             elif parsedName['base_name'] not in updatedLevels:
-                print "New level available for: %s" %(parsedName['base_name'])
+                print "New levels available for: %s" %(parsedName['base_name'])
                 updatedLevels.append(parsedName['base_name'])
             updateList.append(remoteHash[1])
             continue
@@ -87,6 +98,7 @@ class DownloadStatus:
 
     def update(self, percent):
         if os.name != 'nt':
+            self.stdscr.erase()
             self.stdscr.addstr(0,0, "Downloading %s: %.1f percent complete"
                 % (self.filename, percent))
             self.stdscr.refresh()
@@ -97,8 +109,60 @@ class DownloadStatus:
         if os.name != 'nt':
             curses.endwin()
 
-def downloadUpdates(updateList, url=SERVER_URL, path='levels'):
-    status = DownloadStatus()
+class GUIDownloadStatus(DownloadStatus):
+    def __init__(self):
+        self.text_font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 16)
+        self.set_text('Checking for updates')
+        self.width = 400
+        self.height = 30
+        self.progress_bar = pyspy.gui.ProgressBar(400, 30)
+        self.rect = Rect(0,0,400,60)
+        self.background = []
+        self.screen = []
+
+    def update(self, percent):
+        self.progress_bar.update(percent)
+        self.percent = percent
+        self.draw()
+
+    def set_drawables(self, background, screen):
+        self.background = background
+        self.screen = screen
+
+    def set_text(self, text):
+        self.text = self.text_font.render(text, 1, pygame.Color('black'))
+    
+    def set_file(self, filename):
+        levelName = pyspy.utilities.strip_ext(filename)
+        parsed = parseLevelName(levelName)
+        if parsed:
+            self.set_text('Downloading levels for: "%s"' %(parsed['base_name']))
+        else:
+            self.set_text('Downloading image: "%s"' %levelName)
+
+    def quit(self):
+        pass
+
+    def reset(self):
+        self.percent = 0
+
+    def draw(self):
+        if self.background and self.screen:
+            self.screen.blit(self.background, self.rect, self.rect)
+            pygame.draw.rect(self.screen, pygame.Color('white'), self.rect)
+            pygame.draw.rect(self.screen, pygame.Color('black'), self.rect, 3)
+            self.text_rect = Rect(self.rect)
+            self.text_rect.move_ip(5,7)
+            self.screen.blit(self.text, self.text_rect)
+            progress_rect = Rect(self.rect)
+            progress_rect.top += 30
+            self.screen.blit(self.progress_bar, progress_rect) 
+            pygame.display.flip()
+
+
+def downloadUpdates(updateList, url=SERVER_URL, path='levels',
+        statusObj=None):
+    status = statusObj
     for i in updateList:
         status.set_file(i)
         try:
