@@ -133,7 +133,12 @@ class GUIDownloadStatus(DownloadStatus):
         self.text = self.text_font.render(text, 1, pygame.Color('black'))
     
     def set_file(self, filename):
-        self.set_text('Downloading %s' %filename)
+        levelName = pyspy.utilities.strip_ext(filename)
+        parsed = parseLevelName(levelName)
+        if parsed:
+            self.set_text('Downloading levels for: "%s"' %(parsed['base_name']))
+        else:
+            self.set_text('Downloading image: "%s"' %levelName)
 
     def quit(self):
         pass

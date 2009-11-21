@@ -21,6 +21,37 @@ import pyspy
 from pygame.locals import *
 from pyspy.constants import *
 
+class Error(pyspy.states.GameState):
+    def __init__(self, gameScreen):
+        pyspy.states.GameState.__init__(self, gameScreen)
+        self.font = pygame.font.Font(os.path.join('fonts',MONO_FONT), 20)
+
+    def set_error_message(self, message):
+        self.text = self.font.render('Error: '+message,
+                      1, pygame.Color('black'), pygame.Color('white'))
+
+    def enter(self):
+        self.delay = 250
+
+    def update(self):
+        if self.delay > 0:
+            self.delay -= 1
+        else:
+            self.gameControl.music.unpause_track()
+            self.gameControl.setMode(MAIN_MENU)
+
+    def eventHandle(self):
+        # Don't allow escaping to main menu from here.
+        pyspy.states.GameState.eventHandle(self)
+
+    def draw(self, background, screen):
+        screen.blit(background, (0,0))
+        rect = self.text.get_rect()
+        screen_rect = screen.get_rect()
+        rect.center = screen_rect.center
+        screen.blit(self.text, rect)
+
+
 class Correct(pyspy.states.GameState):
     def __init__(self, gameScreen):
         pyspy.states.GameState.__init__(self,gameScreen)

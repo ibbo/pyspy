@@ -228,7 +228,8 @@ class GameScreen:
         self.states = {'NextLevel': pyspy.original.states.NextLevel(self),
                        'Playing': pyspy.original.states.Playing(self),
                        'GameOver': pyspy.original.states.GameOver(self),
-                       'Correct': pyspy.original.states.Correct(self)}
+                       'Correct': pyspy.original.states.Correct(self),
+                       'Error': pyspy.original.states.Error(self)}
 
     def button_pause(self):
         if self.gameControl.music.paused:
@@ -281,8 +282,10 @@ class GameScreen:
             self.state = self.states['NextLevel']
             self.state.enter()
         else:
-            print "No levels found"
-            self.gameControl.setMode(MAIN_MENU)
+            err = "No levels found, try updating levels from main menu."
+            self.state = self.states['Error']
+            self.state.set_error_message(err)
+            self.state.enter()
 
     def draw(self, background, screen):
         self.state.draw(background, screen)
