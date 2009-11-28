@@ -16,6 +16,7 @@
 import os
 import pygame
 import pyspy
+import math
 from pygame.locals import *
 from pyspy.constants import *
 
@@ -66,6 +67,43 @@ class LevelIndicator(pygame.Surface):
             else:
                 l.rect.top = (j-1)*41 + 20
                 self.blit(l.image, l.rect)
+
+class Score:
+    def __init__(self):
+        self.score = 0
+        self.font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 26)
+        self.rect = []
+        self.old_rect = []
+        self.render()
+
+    def reset(self):
+        self.score = 0
+        self.render()
+
+    def __add__(self, amount):
+        self.score += math.floor(amount)
+        self.render()
+        return self
+
+    def __sub__(self, amount):
+        self.score -= math.floor(amount)
+        self.render()
+        return self
+    
+    def render(self):
+        self.text = self.font.render('Score: %5d' %(self.score),1,(0,0,0))
+        if self.rect:
+            self.old_rect = Rect(self.rect)
+        self.rect = self.text.get_rect()
+        if self.old_rect:
+            self.rect.topleft = self.old_rect.topleft
+        self.changed = True
+
+    def draw(self, background, screen):
+        if self.changed:
+            screen.blit(background, self.rect, self.rect)
+            screen.blit(self.text, self.rect)
+            self.changed = False
 
 class Button:
     def __init__(self, name, callback=None, can_disable=True):

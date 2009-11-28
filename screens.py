@@ -213,11 +213,13 @@ class GameScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
         self.level = 0
+        self.screenRect = screenRect
+        self.score = pyspy.gui.Score()
         self.loaded = False
         self.indicator = pyspy.gui.LevelIndicator((screenRect.width, screenRect.height))
         self.images = []
                 
-        self.buttons = {'unshuffle': pyspy.gui.Button('unshuffle'), 
+        self.buttons = {'unshuffle': pyspy.gui.Button('unshuffle'),
             'more_letters': pyspy.gui.Button('more_letters'),
             'reveal': pyspy.gui.Button('reveal'),
             'play': pyspy.gui.Button('play',
