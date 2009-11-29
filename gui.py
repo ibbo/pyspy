@@ -16,6 +16,7 @@
 import os
 import pygame
 import pyspy
+import math
 from pygame.locals import *
 from pyspy.constants import *
 
@@ -67,6 +68,43 @@ class LevelIndicator(pygame.Surface):
                 l.rect.top = (j-1)*41 + 20
                 self.blit(l.image, l.rect)
 
+class Score:
+    def __init__(self):
+        self.score = 0
+        self.font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 26)
+        self.rect = []
+        self.old_rect = []
+        self.render()
+
+    def reset(self):
+        self.score = 0
+        self.render()
+
+    def __add__(self, amount):
+        self.score += math.floor(amount)
+        self.render()
+        return self
+
+    def __sub__(self, amount):
+        self.score -= math.floor(amount)
+        self.render()
+        return self
+    
+    def render(self):
+        self.text = self.font.render('Score: %5d' %(self.score),1,(0,0,0))
+        if self.rect:
+            self.old_rect = Rect(self.rect)
+        self.rect = self.text.get_rect()
+        if self.old_rect:
+            self.rect.topleft = self.old_rect.topleft
+        self.changed = True
+
+    def draw(self, background, screen):
+        if self.changed:
+            screen.blit(background, self.rect, self.rect)
+            screen.blit(self.text, self.rect)
+            self.changed = False
+
 class Button:
     def __init__(self, name, callback=None, can_disable=True):
         self.image, self.rect = pyspy.utilities.load_png(name)
@@ -83,10 +121,12 @@ class Button:
 
     def __call__(self):
         if self.callback:
-            val = self.callback()
-            if not val:
-                self.active = False
-            self.dirty = True
+            if self.active:
+                #FIXME: This is BAD, very, very BAD
+                val = self.callback()
+                if not val:
+                    self.active = False
+                self.dirty = True
 
     def reset(self):
         # FIXME: This is a hack to fix this there should be different types
@@ -114,4 +154,21 @@ class Button:
             text = self.font.render("%d" %(self.callback.counts), 1,
                                             BONUS_COUNT_COLOUR)
             screen.blit(text, (self.rect.x + 15, self.rect.bottom - 30))
+
+class ProgressBar(pygame.Surface):
+    def __init__(self, width, height, color=(211,255,200)):
+        pygame.Surface.__init__(self, (width, height), pygame.SRCALPHA)
+        self.width = width
+        self.height = height
+        self.percent = 0
+        self.color = color
+        self.rect = self.get_rect()
+
+    def update(self, percent):
+        self.percent = percent
+        self.fill((0,0,0,0))
+        pygame.draw.rect(self, self.color, 
+                pygame.Rect(0,0,self.percent/100*self.width, self.height))
+        pygame.draw.rect(self, pygame.Color('black'),
+                pygame.Rect(0,0,self.width,self.height),3)
 

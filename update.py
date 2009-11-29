@@ -29,7 +29,8 @@ def update():
         print "Checking for updates to %s" %(game)
         updates = pyspy.levels.checkForUpdates(remotePath=path)
         if updates:
-            pyspy.levels.downloadUpdates(updates, remotePath=path)
+            status = pyspy.levels.DownloadStatus()
+            pyspy.levels.downloadUpdates(updates, remotePath=path, statusObj=status)
             updates = True
     return updates
 

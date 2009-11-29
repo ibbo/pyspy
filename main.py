@@ -33,6 +33,7 @@ class GameControl:
         self.modes = []
         self.players = []
         self.playerCur = 0
+        self.updated = False
         self.music = pyspy.sound.MusicControl()
         return
 		
@@ -93,7 +94,7 @@ def main(argv):
         elif opt in ("-d", "--debug"):
             print "Debug mode"
             global DEBUG
-            DEBUG = 1
+            DEBUG = True
         elif opt in ("-f", "--fullscreen"):
             print "Running in fullscreen mode"
             FULL = True
@@ -103,7 +104,7 @@ def main(argv):
             if not updates:
                 print "No updates available"
             sys.exit()
-
+    
     # Check that compatible versions of pygame and python are being used
     pygame_ver = pygame.version.vernum
     if pygame_ver[0] < 1 or (pygame_ver[0] < 2 and pygame_ver[1] < 9):
@@ -144,7 +145,7 @@ def main(argv):
     background.blit(logo, logo_rect)
     background = background.convert_alpha()
 
-    bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT), 
+    bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                     MENU_SIZE_BIG)
     loadingText = bigFont.render('Loading...', 1, (255,255,255))
     loadingRect = loadingText.get_rect()
@@ -166,6 +167,8 @@ def main(argv):
             pyspy.screens.GameScreen(gameControl, screen.get_rect()))
     gameControl.addMode(
             pyspy.screens.InstructionsScreen(gameControl, screen.get_rect()))
+    gameControl.addMode(
+            pyspy.screens.UpdateScreen(gameControl, screen.get_rect()))
 
     while 1:
         # Lock the framerate

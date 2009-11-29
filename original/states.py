@@ -21,6 +21,37 @@ import pyspy
 from pygame.locals import *
 from pyspy.constants import *
 
+class Error(pyspy.states.GameState):
+    def __init__(self, gameScreen):
+        pyspy.states.GameState.__init__(self, gameScreen)
+        self.font = pygame.font.Font(os.path.join('fonts',MONO_FONT), 20)
+
+    def set_error_message(self, message):
+        self.text = self.font.render('Error: '+message,
+                      1, pygame.Color('black'), pygame.Color('white'))
+
+    def enter(self):
+        self.delay = 250
+
+    def update(self):
+        if self.delay > 0:
+            self.delay -= 1
+        else:
+            self.gameControl.music.unpause_track()
+            self.gameControl.setMode(MAIN_MENU)
+
+    def eventHandle(self):
+        # Don't allow escaping to main menu from here.
+        pyspy.states.GameState.eventHandle(self)
+
+    def draw(self, background, screen):
+        screen.blit(background, (0,0))
+        rect = self.text.get_rect()
+        screen_rect = screen.get_rect()
+        rect.center = screen_rect.center
+        screen.blit(self.text, rect)
+
+
 class Correct(pyspy.states.GameState):
     def __init__(self, gameScreen):
         pyspy.states.GameState.__init__(self,gameScreen)
@@ -121,6 +152,7 @@ class GameOver(pyspy.states.GameState):
             self.delay -= 1
         else:
             self.gameControl.music.unpause_track()
+            self.gameScreen.score.reset()
             self.gameControl.setMode(MAIN_MENU)
 
     def eventHandle(self):
@@ -137,6 +169,8 @@ class GameOver(pyspy.states.GameState):
         if self.won:
             rect.top += int(100*math.sin(self.delay*2*math.pi/40))
         screen.blit(self.text, rect.bottomleft)
+        self.gameScreen.score.changed = True
+        self.gameScreen.score.draw(background, screen)
 
 #TODO: Implement cool transition effect
 class NextLevel(pyspy.states.GameState):
@@ -192,6 +226,8 @@ class NextLevel(pyspy.states.GameState):
         self.image = self.gameScreen.image
         self.image.rect.topleft = (X_OFFSET, Y_OFFSET)
         self.image.mask.rect.topleft = self.image.rect.topleft
+        self.gameScreen.score.rect.topright = self.gameScreen.screenRect.topright
+        self.gameScreen.score.rect.move_ip(-20, 210)
         if not self.drawn_once:
             self.static_text_rect.topleft = self.image.rect.bottomleft
             self.static_text_rect.centery += 5
@@ -223,11 +259,12 @@ class NextLevel(pyspy.states.GameState):
         screen.blit(self.static_text, self.static_text_rect)
         screen.blit(self.image.clue.image, self.text_rect)
         self.gameScreen.indicator.draw(self.gameScreen.level)
-        screen.blit(self.gameScreen.indicator, 
+        screen.blit(self.gameScreen.indicator,
                 self.gameScreen.indicator.rect)
 
         for button in self.buttons.values():
             button.draw(background, screen)
+        self.gameScreen.score.draw(background, screen)
 
 class Playing(pyspy.states.GameState):
     def __init__(self, gameScreen):
@@ -288,6 +325,7 @@ class Playing(pyspy.states.GameState):
                 y = mousepos[1]-self.image.rect.top
                 if self.image.mask.mask.get_at((x,y)):
                     self.yipee_sound.play()
+                    self.gameScreen.score += self.timer.time_bar.width
                     self.gameScreen.state = self.gameScreen.states['Correct']
                     self.gameScreen.state.enter()
                 else:
@@ -305,6 +343,7 @@ class Playing(pyspy.states.GameState):
                     distance = self.image.mask.get_distance((x,y))
                     self.indicator.set_colour(distance)
                     self.indicator.show = True
+                    self.gameScreen.score -= distance
             else:
                 for button in self.buttons.values():
                     if button.rect.collidepoint(mousepos) and button.active:
@@ -327,6 +366,9 @@ class Playing(pyspy.states.GameState):
                 self.gameScreen.static_text_rect)
         screen.blit(self.gameScreen.static_text,
                     self.gameScreen.static_text_rect)
+        #FIXME: Shouldn't have to manually let the score know to redraw
+        self.gameScreen.score.changed = True
+        self.gameScreen.score.draw(background, screen)
         # Re-draw dirty rects
         for button in self.buttons.values():
             if button.dirty:

@@ -20,6 +20,7 @@ QUIT = -1
 MAIN_MENU = 0
 GAME = 1
 INSTRUCTIONS = 2
+UPDATE = 3
 # The offset of the image from the screen
 X_OFFSET = 20
 Y_OFFSET = 50
@@ -62,7 +63,7 @@ TICK_Y_OFFSET = -24
 MUSIC = 1
 SOUND = 1
 # Code control
-DEBUG = False
+DEBUG = True
 DEBUG_DRAW_OUTLINE = True
 if DEBUG:
     REVEALS = 1000
