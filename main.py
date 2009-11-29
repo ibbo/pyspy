@@ -180,7 +180,7 @@ def main(argv):
 
         # Handle game exit
         if gameControl.modeCur == -1:
-            return
+            break
 
         #Flip to front
         pygame.display.flip()
