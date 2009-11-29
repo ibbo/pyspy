@@ -47,7 +47,7 @@ class GameControl:
         
         # If we didn't set the mode to exit
         if self.modeCur != -1:
-            self.modes[self.modeCur].reset(type)		
+            self.modes[self.modeCur].reset(type)
 
     def update(self):
         """Update the current mode and events"""

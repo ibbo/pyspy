@@ -23,11 +23,14 @@ from pyspy.constants import *
 class StartScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
-        self.menuMax = 3
         move_sound = pyspy.sound.SoundEffect(
                         os.path.join('sounds','menu_move.wav'))
         self.menu = pyspy.menu.Menu(
-                ["Play Game", "Instructions", "Update levels", "Quit"], move_sound)
+                [("Play Game",GAME),
+                    ("Instructions",INSTRUCTIONS),
+                    ("Update levels",UPDATE),
+                    ("Quit",QUIT)],
+                move_sound)
         self.firstDraw = 1
 
     def reset(self, type):
@@ -37,10 +40,7 @@ class StartScreen:
         return
 
     def eventHandle(self):
-        if self.gameControl.gameEvent.mouseMoved:
-            pass
         mousepos = self.gameControl.gameEvent.mousePos
-            
         collided = self.menu.collide(mousepos)
         # Check for quit
         if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
@@ -59,14 +59,7 @@ class StartScreen:
             self.gameControl.gameEvent.newkeys[K_KP_ENTER] or \
                 (self.gameControl.gameEvent.mouseButtons[0] and \
                     collided):
-            if self.menu.selectedItem.text == "Play Game":
-                self.gameControl.setMode(GAME)
-            if self.menu.selectedItem.text == "Instructions":
-                self.gameControl.setMode(INSTRUCTIONS)
-            if self.menu.selectedItem.text == "Update levels":
-                self.gameControl.setMode(UPDATE)
-            if self.menu.selectedItem.text == "Quit":
-                self.gameControl.setMode(QUIT)
+            self.gameControl.setMode(self.menu.selectedItem.mode)
 
     def update(self):
         return
@@ -219,7 +212,8 @@ class GameScreen:
         self.screenRect = screenRect
         self.score = pyspy.gui.Score()
         self.loaded = False
-        self.indicator = pyspy.gui.LevelIndicator((screenRect.width, screenRect.height))
+        self.indicator = pyspy.gui.LevelIndicator(
+                (screenRect.width, screenRect.height))
         self.images = []
         self.image = None
         self.spythis = True

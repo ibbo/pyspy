@@ -23,14 +23,15 @@ if DEBUG:
     import pdb
 
 class MenuItem():
-    def __init__(self, text, index):
-        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT), 
+    def __init__(self, info, index):
+        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                         MENU_SIZE_NORMAL)
-        self.bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT), 
+        self.bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                         MENU_SIZE_BIG)
         self.selected = 0
-        self.text = text
+        self.text = info[0]
         self.index = index
+        self.mode = info[1]
         self.renderedText = {}
         self.renderText()
 
@@ -45,12 +46,12 @@ class MenuItem():
     def renderText(self):
         if self.selected:
             if not self.renderedText.has_key('big'):
-                self.renderedText['big'] = self.bigFont.render(self.text, 1, 
+                self.renderedText['big'] = self.bigFont.render(self.text, 1,
                                                 MENU_SELECTED_COLOUR)
             self.textImage = self.renderedText['big']
         else:
             if not self.renderedText.has_key('normal'):
-                self.renderedText['normal'] = self.font.render(self.text, 1, 
+                self.renderedText['normal'] = self.font.render(self.text, 1,
                                                 MENU_COLOUR)
             self.textImage = self.renderedText['normal']
         self.rect = self.textImage.get_rect()

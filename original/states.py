@@ -226,7 +226,8 @@ class NextLevel(pyspy.states.GameState):
         self.image = self.gameScreen.image
         self.image.rect.topleft = (X_OFFSET, Y_OFFSET)
         self.image.mask.rect.topleft = self.image.rect.topleft
-        self.gameScreen.score.rect.topright = self.gameScreen.screenRect.topright
+        self.gameScreen.score.rect.topright = \
+                self.gameScreen.screenRect.topright
         self.gameScreen.score.rect.move_ip(-20, 210)
         if not self.drawn_once:
             self.static_text_rect.topleft = self.image.rect.bottomleft

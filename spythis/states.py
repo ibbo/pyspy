@@ -32,19 +32,19 @@ class Correct(pyspy.states.GameState):
         #self.image.set_alpha(127)
         self.drawn = 0
 
-    def leave(self):
+    def leave(self, nextState):
         self.image.set_alpha(255)
         pygame.mouse.set_visible(True)
+        self.gameScreen.state = nextState
+        self.gameScreen.state.enter()
 
     def update(self):
         if self.time_left > 0:
             self.time_left -= 1
-            new_alpha = 255/CORRECT_TIME*self.time_left
+            new_alpha = int(255.0/CORRECT_TIME*self.time_left)
             self.image.set_alpha(new_alpha)
         elif self.time_left == 0:
-            self.leave()
-            self.gameScreen.state = self.gameScreen.states['NextLevel']
-            self.gameScreen.state.enter()
+            self.leave(self.gameScreen.states['NextLevel'])
         else:
             raise ValueError('time_left cannot be negative')
 
@@ -92,6 +92,7 @@ class GameOver(pyspy.states.GameState):
             self.delay -= 1
         else:
             self.gameControl.music.unpause_track()
+            self.gameScreen.score.reset()
             self.gameControl.setMode(MAIN_MENU)
 
     def eventHandle(self):
@@ -108,6 +109,8 @@ class GameOver(pyspy.states.GameState):
         if self.won:
             rect.top += int(100*math.sin(self.delay*2*math.pi/40))
         screen.blit(self.text, rect.bottomleft)
+        self.gameScreen.score.changed = True
+        self.gameScreen.score.draw(background, screen)
 
 #TODO: Implement cool transition effect
 class NextLevel(pyspy.states.GameState):
@@ -150,7 +153,7 @@ class NextLevel(pyspy.states.GameState):
             self.delay -= 1
         else:
             self.delay -= 1
-        self.image.set_alpha(255 - 255/FADE_IN_TIME*self.delay)
+        self.image.set_alpha(int(255 - 255.0/FADE_IN_TIME*self.delay))
 
     def updateParent(self):
         self.gameScreen.buttons = self.buttons
@@ -163,6 +166,9 @@ class NextLevel(pyspy.states.GameState):
         # Set the image position
         self.image = self.gameScreen.image
         self.image.rect.topleft = (X_OFFSET, Y_OFFSET)
+        self.gameScreen.score.rect.topright = \
+                self.gameScreen.screenRect.topright
+        self.gameScreen.score.rect.move_ip(-40, 210)
         last = self.image.rect.bottomleft
         bottoms = []
         for i in self.image.masks:
@@ -171,14 +177,14 @@ class NextLevel(pyspy.states.GameState):
             bottoms.append(i.spythis_rect.bottom)
             last = i.spythis_rect.topright
         if not self.drawn_once:
-            self.buttons['reveal'].rect.left = \
-                self.image.masks[0].spythis_rect.left
+            self.buttons['reveal'].rect.centerx = \
+                self.gameScreen.score.rect.centerx
             self.buttons['reveal'].rect.top = \
-                max(bottoms)
+                self.gameScreen.score.rect.bottom
             self.buttons['reveal'].rect.move_ip(0, 5)
             self.buttons['play'].rect.topleft = \
                 self.buttons['reveal'].rect.bottomleft
-            self.buttons['play'].rect.move_ip(0, 10)
+            self.buttons['play'].rect.move_ip(-30, 10)
             self.buttons['pause'].rect.topleft = \
                 self.buttons['play'].rect.topright
             self.buttons['pause'].rect.move_ip(5, 0)
@@ -193,10 +199,11 @@ class NextLevel(pyspy.states.GameState):
             screen.blit(background, (0,0))
             screen.blit(self.image, self.image.rect)
             self.gameScreen.indicator.draw(self.gameScreen.level)
-            screen.blit(self.gameScreen.indicator, 
+            screen.blit(self.gameScreen.indicator,
                 self.gameScreen.indicator.rect)
             for button in self.buttons.values():
                 button.draw(background, screen)
+            self.gameScreen.score.draw(background, screen)
             self.drawn_once = True
         if self.draw_last:
             for i in self.image.masks:
@@ -260,6 +267,7 @@ class Playing(pyspy.states.GameState):
                 masks_left = True
         if not masks_left:
             self.yipee_sound.play()
+            self.gameScreen.score += self.timer.time_bar.width
             self.gameScreen.state = self.gameScreen.states['Correct']
             self.gameScreen.state.enter()
 
@@ -335,6 +343,9 @@ class Playing(pyspy.states.GameState):
 
         # Draw the distance indicator
         self.indicator.draw(background, screen, self.image)
+        #FIXME: Shouldn't have to manually let the score know to redraw
+        self.gameScreen.score.changed = True
+        self.gameScreen.score.draw(background, screen)
 
     def reset(self):
         self.indicator.reset()
