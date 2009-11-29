@@ -65,9 +65,9 @@ def checkForUpdates(url=SERVER_URL, localPath='levels', remotePath='levels'):
             # of updates to be downloaded.
             parsedName = parseLevelName(remoteHash[1])
             if not parsedName:
-                print "New level available: %s" %(remoteHash[1])
+                print "New image available: %s" %(remoteHash[1])
             elif parsedName['base_name'] not in updatedLevels:
-                print "New level available for: %s" %(parsedName['base_name'])
+                print "New levels available for: %s" %(parsedName['base_name'])
                 updatedLevels.append(parsedName['base_name'])
             updateList.append(remoteHash[1])
             continue
