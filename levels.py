@@ -170,7 +170,6 @@ class GUIDownloadStatus(DownloadStatus):
 def downloadUpdates(updateList, url=SERVER_URL,
                         localPath='levels', statusObj=None):
     status = statusObj
-    print updateList
     for i in updateList:
         status.set_file(i)
         try:
