@@ -24,9 +24,9 @@ if DEBUG:
 
 class MenuItem():
     def __init__(self, text, index):
-        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT), 
+        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                         MENU_SIZE_NORMAL)
-        self.bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT), 
+        self.bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                         MENU_SIZE_BIG)
         self.selected = 0
         self.text = text
@@ -45,12 +45,12 @@ class MenuItem():
     def renderText(self):
         if self.selected:
             if not self.renderedText.has_key('big'):
-                self.renderedText['big'] = self.bigFont.render(self.text, 1, 
+                self.renderedText['big'] = self.bigFont.render(self.text, 1,
                                                 MENU_SELECTED_COLOUR)
             self.textImage = self.renderedText['big']
         else:
             if not self.renderedText.has_key('normal'):
-                self.renderedText['normal'] = self.font.render(self.text, 1, 
+                self.renderedText['normal'] = self.font.render(self.text, 1,
                                                 MENU_COLOUR)
             self.textImage = self.renderedText['normal']
         self.rect = self.textImage.get_rect()
@@ -120,7 +120,8 @@ class Menu:
             raise ValueError, "Direction must be either 'up' or 'down'"
         if self.selectedItem.index + nextItem < len(self.items) and \
                 self.selectedItem.index + nextItem >= 0:
-            self.move_sound.play()
+            if self.move_sound:
+                self.move_sound.play()
             self.selectedItem.deselect()
             self.selectedItem = self.items[self.selectedItem.index + nextItem]
             self.selectedItem.select()

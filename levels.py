@@ -29,7 +29,7 @@ import pygame
 from pygame.locals import *
 
 def parseLevelName(levelName):
-    p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+_)+)([0-9]+)')
+    p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+|#[0-9]*)_+)([0-9]+)')
     m = p.match(levelName)
     if m:
         parsedName = {'base_name': m.group(1), 'clue': m.group(2),
@@ -47,9 +47,9 @@ def getLevels(path='levels'):
 def checkLevel(level, path='levels'):
     return level+'.png' in os.listdir(path)
 
-def checkForUpdates(url=SERVER_URL, path='levels'):
+def checkForUpdates(url=SERVER_URL, localPath='levels', remotePath='levels'):
     opener = urllib.FancyURLopener({})
-    f = opener.open(url+'levels.md5')
+    f = opener.open(url+'/'+remotePath+'/'+'levels.md5')
     levels = f.readlines()
     f.close()
     updateList = []
@@ -58,16 +58,16 @@ def checkForUpdates(url=SERVER_URL, path='levels'):
         m = hashlib.md5()
         remoteHash = i.split()
         try:
-            localFile = open(os.path.join(path,remoteHash[1]), 'r')
+            localFile = open(os.path.join(localPath,remoteHash[1]), 'r')
         except IOError:
             # If there's an IOError we assume the file doesn't exist and
             # that there's a new level on the server. So add it to the list
             # of updates to be downloaded.
             parsedName = parseLevelName(remoteHash[1])
             if not parsedName:
-                print "New level available: %s" %(remoteHash[1])
+                print "New image available: %s" %(remoteHash[1])
             elif parsedName['base_name'] not in updatedLevels:
-                print "New level available for: %s" %(parsedName['base_name'])
+                print "New levels available for: %s" %(parsedName['base_name'])
                 updatedLevels.append(parsedName['base_name'])
             updateList.append(remoteHash[1])
             continue
@@ -156,17 +156,18 @@ class GUIDownloadStatus(DownloadStatus):
             self.screen.blit(self.text, self.text_rect)
             progress_rect = Rect(self.rect)
             progress_rect.top += 30
-            self.screen.blit(self.progress_bar, progress_rect) 
+            self.screen.blit(self.progress_bar, progress_rect)
             pygame.display.flip()
 
 
-def downloadUpdates(updateList, url=SERVER_URL, path='levels',
-        statusObj=None):
+def downloadUpdates(updateList, url=SERVER_URL,
+                        localPath='levels', remotePath='levels', statusObj=None):
     status = statusObj
     for i in updateList:
         status.set_file(i)
         try:
-            urllib.urlretrieve(url+i, os.path.join(path,i), status)
+            urlToLevel = urllib.pathname2url(os.path.join(remotePath,i))
+            urllib.urlretrieve(url+urlToLevel, os.path.join(localPath,i), status)
         finally:
             status.quit()
     status.quit()
@@ -202,7 +203,7 @@ def generateLevel(level, path='levels'):
         gimpCommand = "gimp-2.6.exe"
     else:
         gimpCommand = "gimp"
-    os.system(gimpCommand + 
+    os.system(gimpCommand +
               " -i -b '(generate-levels \"%s.xcf\")' -b '(gimp-quit 0)'"
               %(os.path.join(path,level)))
 

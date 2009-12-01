@@ -38,7 +38,7 @@ class Error(pyspy.states.GameState):
             self.delay -= 1
         else:
             self.gameControl.music.unpause_track()
-            self.gameControl.setMode(MAIN_MENU)
+            self.gameScreen.quit()
 
     def eventHandle(self):
         # Don't allow escaping to main menu from here.
@@ -153,7 +153,7 @@ class GameOver(pyspy.states.GameState):
         else:
             self.gameControl.music.unpause_track()
             self.gameScreen.score.reset()
-            self.gameControl.setMode(MAIN_MENU)
+            self.gameScreen.quit()
 
     def eventHandle(self):
         # Don't allow escaping to main menu from here.
@@ -177,6 +177,10 @@ class NextLevel(pyspy.states.GameState):
     def __init__(self, gameScreen):
         pyspy.states.GameState.__init__(self,gameScreen)
         self.buttons = self.gameScreen.buttons
+        self.buttons['unshuffle'] = pyspy.gui.Button('unshuffle')
+        self.buttons['more_letters'] = pyspy.gui.Button('more_letters')
+        self.buttons['reveal'] = pyspy.gui.Button('reveal')
+        self.gameScreen.buttons = self.buttons
         self.static_font = pygame.font.Font(
                 os.path.join('fonts',TEXT_FONT), 28)
         self.gameScreen.static_text = self.static_font.render(
@@ -222,7 +226,8 @@ class NextLevel(pyspy.states.GameState):
         self.image = self.gameScreen.image
         self.image.rect.topleft = (X_OFFSET, Y_OFFSET)
         self.image.mask.rect.topleft = self.image.rect.topleft
-        self.gameScreen.score.rect.topright = self.gameScreen.screenRect.topright
+        self.gameScreen.score.rect.topright = \
+                self.gameScreen.screenRect.topright
         self.gameScreen.score.rect.move_ip(-20, 210)
         if not self.drawn_once:
             self.static_text_rect.topleft = self.image.rect.bottomleft

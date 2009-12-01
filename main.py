@@ -26,43 +26,53 @@ from pyspy.constants import *
 if DEBUG:
     import pdb
 
+class QuitMode:
+    def __init__(self):
+        pass
+
+    def eventHandle(self):
+        pass
+
+    def update(self):
+        pass
+
+    def reset(self, type):
+        pass
+
+    def draw(self, background, screen):
+        pass
+
 class GameControl:
     def __init__(self):
         self.gameEvent = pyspy.events.GameEvent()
-        self.modeCur = 0
-        self.modes = []
+        self.currentMode = 0
+        self.modes = {}
         self.players = []
         self.playerCur = 0
         self.updated = False
         self.music = pyspy.sound.MusicControl()
-        return
 		
-    def addMode(self, newMode):
+    def addModes(self, newModes):
         """Insert the new mode into the modes list"""
-        self.modes.append(newMode)
+        for k,v in newModes.items():
+            self.modes[k] = v
         
     def setMode(self, newMode, type = 0):
         """Set the new mode, and reset it"""
-        self.modeCur = newMode
+        self.currentMode = self.modes[newMode]
         
-        # If we didn't set the mode to exit
-        if self.modeCur != -1:
-            self.modes[self.modeCur].reset(type)		
+        self.currentMode.reset(type)
 
     def update(self):
         """Update the current mode and events"""
         self.gameEvent.update()
         self.music.update()
         
-        if self.modeCur != -1:
-            self.modes[self.modeCur].eventHandle()
-                
-        if self.modeCur != -1:
-            self.modes[self.modeCur].update()
+        self.currentMode.eventHandle()
+        self.currentMode.update()
 
     def draw(self, background, screen):
-        if self.modeCur != -1:
-            self.modes[self.modeCur].draw(background, screen)
+        self.currentMode.draw(background, screen)
 
 def usage():
     usage_string = """
@@ -94,7 +104,7 @@ def main(argv):
         elif opt in ("-d", "--debug"):
             print "Debug mode"
             global DEBUG
-            DEBUG = 1
+            DEBUG = True
         elif opt in ("-f", "--fullscreen"):
             print "Running in fullscreen mode"
             FULL = True
@@ -104,7 +114,7 @@ def main(argv):
             if not updates:
                 print "No updates available"
             sys.exit()
-
+    
     # Check that compatible versions of pygame and python are being used
     pygame_ver = pygame.version.vernum
     if pygame_ver[0] < 1 or (pygame_ver[0] < 2 and pygame_ver[1] < 9):
@@ -145,7 +155,7 @@ def main(argv):
     background.blit(logo, logo_rect)
     background = background.convert_alpha()
 
-    bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT), 
+    bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                     MENU_SIZE_BIG)
     loadingText = bigFont.render('Loading...', 1, (255,255,255))
     loadingRect = loadingText.get_rect()
@@ -160,15 +170,21 @@ def main(argv):
     clock = pygame.time.Clock()
     random.seed()
 
+    # Set the menus
+    front_menu = pyspy.menu.Menu(["I Spy", "Spy This", "Update Levels", "Quit"])
+
     gameControl = GameControl()
-    gameControl.addMode(
-            pyspy.screens.StartScreen(gameControl, screen.get_rect()))
-    gameControl.addMode(
-            pyspy.screens.GameScreen(gameControl, screen.get_rect()))
-    gameControl.addMode(
-            pyspy.screens.InstructionsScreen(gameControl, screen.get_rect()))
-    gameControl.addMode(
-            pyspy.screens.UpdateScreen(gameControl, screen.get_rect()))
+    screenRect = screen.get_rect()
+    modes = {"Main Menu": pyspy.screens.RootMenu(gameControl, screenRect,
+        front_menu),
+            "I Spy": pyspy.screens.ISpyScreen(gameControl, screenRect),
+        "Spy This": pyspy.screens.SpyThisScreen(gameControl, screenRect),
+        "Update Levels": pyspy.screens.UpdateScreen(gameControl, screenRect),
+        "Instructions":
+            pyspy.screens.InstructionsScreen(gameControl, screenRect),
+            "Quit": QuitMode()}
+    gameControl.addModes(modes)
+    gameControl.setMode("Main Menu")
 
     while 1:
         # Lock the framerate
@@ -179,8 +195,8 @@ def main(argv):
         gameControl.draw(background, screen)
 
         # Handle game exit
-        if gameControl.modeCur == -1:
-            return
+        if gameControl.currentMode.__class__.__name__ == "QuitMode":
+            break
 
         #Flip to front
         pygame.display.flip()

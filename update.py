@@ -23,13 +23,16 @@ def update():
     """update() - Downloads updates for pyspy levels if available
 
     Returns false if no updates were available"""
-    updates = pyspy.levels.checkForUpdates()
-    if updates:
-        status = pyspy.levels.DownloadStatus()
-        pyspy.levels.downloadUpdates(updates, statusObj=status)
-        return True
-    else:
-        return False
+    gamesToUpdate = {'I Spy':'levels', 'SpyThis': 'levels/spythis'}
+    updates = False
+    for (game, path) in gamesToUpdate.items():
+        print "Checking for updates to %s" %(game)
+        updates = pyspy.levels.checkForUpdates(remotePath=path)
+        if updates:
+            status = pyspy.levels.DownloadStatus()
+            pyspy.levels.downloadUpdates(updates, remotePath=path, statusObj=status)
+            updates = True
+    return updates
 
 if __name__ == '__main__':
     update()
