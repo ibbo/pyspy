@@ -89,7 +89,7 @@ class UpdateScreen:
         self.downloading = False
         self.download_button = pyspy.gui.Button('download')
         self.download_button.set_callback(self.download)
-        self.path = ''
+        self.paths = ['levels', 'levels/spythis']
         self.drawn = 0
         self.checked = 0
         self.updatesAvailable = False
@@ -98,16 +98,15 @@ class UpdateScreen:
         self.download_button.rect.centerx = self.status.rect.centerx
         self.download_button.rect.top = self.status.rect.bottom + 5
 
-    def checkForUpdates(self, path):
-        if path:
-            updates = pyspy.levels.checkForUpdates(path=path)
-        else:
-            updates = pyspy.levels.checkForUpdates()
+    def checkForUpdates(self):
+        updates = []
+        for path in self.paths:
+            [updates.append(i) for i in pyspy.levels.checkForUpdates(remotePath=path)]
         return updates
 
     def update(self):
         if not self.checked:
-            self.updates = self.checkForUpdates(self.path)
+            self.updates = self.checkForUpdates()
             self.checked = True
             if self.updates:
                 self.status.set_text('Updates available')

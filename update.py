@@ -30,7 +30,7 @@ def update():
         updates = pyspy.levels.checkForUpdates(remotePath=path)
         if updates:
             status = pyspy.levels.DownloadStatus()
-            pyspy.levels.downloadUpdates(updates, remotePath=path, statusObj=status)
+            pyspy.levels.downloadUpdates(updates, statusObj=status)
             updates = True
     return updates
 

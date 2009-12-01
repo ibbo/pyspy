@@ -69,7 +69,8 @@ def checkForUpdates(url=SERVER_URL, localPath='levels', remotePath='levels'):
             elif parsedName['base_name'] not in updatedLevels:
                 print "New levels available for: %s" %(parsedName['base_name'])
                 updatedLevels.append(parsedName['base_name'])
-            updateList.append(remoteHash[1])
+            update = os.path.join(remotePath, remoteHash[1])
+            updateList.append(update)
             continue
         m.update(localFile.read())
         localFile.close()
@@ -81,7 +82,8 @@ def checkForUpdates(url=SERVER_URL, localPath='levels', remotePath='levels'):
             print '\n'
         if sum != remoteHash[0]:
             print "Updates available for: %s" %(remoteHash[1])
-            updateList.append(remoteHash[1])
+            update = os.path.join(remotePath, remoteHash[1])
+            updateList.append(update)
     return updateList
 
 class DownloadStatus:
@@ -133,7 +135,12 @@ class GUIDownloadStatus(DownloadStatus):
         self.text = self.text_font.render(text, 1, pygame.Color('black'))
     
     def set_file(self, filename):
-        levelName = pyspy.utilities.strip_ext(filename)
+        split_path = os.path.split(filename)
+        if len(split_path) > 1:
+            name = split_path[1]
+        else:
+            name = split_path[0]
+        levelName = pyspy.utilities.strip_ext(name)
         parsed = parseLevelName(levelName)
         if parsed:
             self.set_text('Downloading levels for: "%s"' %(parsed['base_name']))
@@ -161,13 +168,14 @@ class GUIDownloadStatus(DownloadStatus):
 
 
 def downloadUpdates(updateList, url=SERVER_URL,
-                        localPath='levels', remotePath='levels', statusObj=None):
+                        localPath='levels', statusObj=None):
     status = statusObj
+    print updateList
     for i in updateList:
         status.set_file(i)
         try:
-            urlToLevel = urllib.pathname2url(os.path.join(remotePath,i))
-            urllib.urlretrieve(url+urlToLevel, os.path.join(localPath,i), status)
+            urllib.urlretrieve(url+urllib.pathname2url(i),
+                    os.path.join(localPath,os.path.split(i)[1]), status)
         finally:
             status.quit()
     status.quit()
