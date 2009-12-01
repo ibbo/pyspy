@@ -29,7 +29,7 @@ import pygame
 from pygame.locals import *
 
 def parseLevelName(levelName):
-    p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+|#[0-9]*_)+)([0-9]+)')
+    p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+|#[0-9]*)_+)([0-9]+)')
     m = p.match(levelName)
     if m:
         parsedName = {'base_name': m.group(1), 'clue': m.group(2),
@@ -156,7 +156,7 @@ class GUIDownloadStatus(DownloadStatus):
             self.screen.blit(self.text, self.text_rect)
             progress_rect = Rect(self.rect)
             progress_rect.top += 30
-            self.screen.blit(self.progress_bar, progress_rect) 
+            self.screen.blit(self.progress_bar, progress_rect)
             pygame.display.flip()
 
 
@@ -203,7 +203,7 @@ def generateLevel(level, path='levels'):
         gimpCommand = "gimp-2.6.exe"
     else:
         gimpCommand = "gimp"
-    os.system(gimpCommand + 
+    os.system(gimpCommand +
               " -i -b '(generate-levels \"%s.xcf\")' -b '(gimp-quit 0)'"
               %(os.path.join(path,level)))
 

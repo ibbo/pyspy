@@ -20,17 +20,13 @@ import pyspy
 from pygame.locals import *
 from pyspy.constants import *
 
-class StartScreen:
-    def __init__(self, gameControlObj, screenRect):
+class MenuScreen:
+    def __init__(self, gameControlObj, screenRect, menu):
         self.gameControl = gameControlObj
         move_sound = pyspy.sound.SoundEffect(
                         os.path.join('sounds','menu_move.wav'))
-        self.menu = pyspy.menu.Menu(
-                [("Play Game",GAME),
-                    ("Instructions",INSTRUCTIONS),
-                    ("Update levels",UPDATE),
-                    ("Quit",QUIT)],
-                move_sound)
+        self.menu = menu
+        self.menu.move_sound = move_sound
         self.firstDraw = 1
 
     def reset(self, type):
@@ -39,12 +35,15 @@ class StartScreen:
         self.firstDraw = 1
         return
 
+    def quit(self):
+        self.gameControl.setMode("Main Menu")
+
     def eventHandle(self):
         mousepos = self.gameControl.gameEvent.mousePos
         collided = self.menu.collide(mousepos)
         # Check for quit
         if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
-            self.gameControl.setMode(QUIT)
+            self.quit()
 
         # Move selection up and down
         if self.gameControl.gameEvent.newkeys[K_DOWN]:
@@ -59,7 +58,7 @@ class StartScreen:
             self.gameControl.gameEvent.newkeys[K_KP_ENTER] or \
                 (self.gameControl.gameEvent.mouseButtons[0] and \
                     collided):
-            self.gameControl.setMode(self.menu.selectedItem.mode)
+            self.gameControl.setMode(self.menu.selectedItem.text)
 
     def update(self):
         return
@@ -73,6 +72,10 @@ class StartScreen:
         self.menu.setPositions(background.get_rect())
         #Draw Everything
         self.menu.draw(background, screen)
+
+class RootMenu(MenuScreen):
+    def quit(self):
+        self.gameControl.setMode("Quit")
 
 class UpdateScreen:
     def __init__(self, gameControlObj, screenRect):
@@ -128,12 +131,12 @@ class UpdateScreen:
         self.status.reset()
 
     def quit(self):
-        self.gameControl.setMode(MAIN_MENU)
+        self.gameControl.setMode("Main Menu")
         return True
 
     def eventHandle(self):
         if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
-            self.gameControl.setMode(MAIN_MENU)
+            self.quit()
         mousepos = self.gameControl.gameEvent.mousePos
         if self.gameControl.gameEvent.mouseButtons[0]:
             if self.back_button.rect.collidepoint(mousepos):
@@ -184,12 +187,12 @@ class InstructionsScreen:
         pass
 
     def quit(self):
-        self.gameControl.setMode(MAIN_MENU)
+        self.gameControl.setMode("Main Menu")
         return True
 
     def eventHandle(self):
         if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
-            self.gameControl.setMode(MAIN_MENU)
+            self.quit()
         mousepos = self.gameControl.gameEvent.mousePos
         if self.gameControl.gameEvent.mouseButtons[0]:
             if self.back_button.rect.collidepoint(mousepos):
@@ -216,19 +219,13 @@ class GameScreen:
                 (screenRect.width, screenRect.height))
         self.images = []
         self.image = None
-        self.spythis = True
        
         self.buttons = {'play': pyspy.gui.Button('play',
                 callback=self.gameControl.music.unpause_track),
             'pause': pyspy.gui.Button('pause', callback=self.button_pause),
             'next': pyspy.gui.Button('next',
                 callback=self.gameControl.music.next_track)}
-        self.states = {'NextLevel': pyspy.spythis.states.NextLevel(self),
-                       'Playing': pyspy.spythis.states.Playing(self),
-                       'GameOver': pyspy.spythis.states.GameOver(self),
-                       'Correct': pyspy.spythis.states.Correct(self),
-                       'Error': pyspy.original.states.Error(self)}
-
+        
     def button_pause(self):
         if self.gameControl.music.paused:
             self.gameControl.music.unpause_track()
@@ -238,11 +235,13 @@ class GameScreen:
 
     def set_image(self, imageObj):
         self.image = imageObj
-        self.image.set_mask(self.level)
-        self.image.set_spythis_masks()
     
     def update(self):
         self.state.update()
+
+    def quit(self):
+        self.gameControl.setMode("Main Menu")
+        return True
 
     def set_level(self, level):
         valid_images = []
@@ -251,7 +250,7 @@ class GameScreen:
                 if i.info.has_spythis:
                     valid_images.append(i)
             else:
-                if level in i.levels:
+                if level in i.levels['ispy']:
                     valid_images.append(i)
 
         if valid_images:
@@ -309,9 +308,33 @@ class GameScreen:
             self.state.set_error_message(err)
             self.state.enter()
 
-
-
     def draw(self, background, screen):
         self.state.draw(background, screen)
 
+class ISpyScreen(GameScreen):
+    def __init__(self, gameControlObj, screenRect):
+        GameScreen.__init__(self, gameControlObj, screenRect)
+        self.spythis = False
+        self.states = {'NextLevel': pyspy.original.states.NextLevel(self),
+                       'Playing': pyspy.original.states.Playing(self),
+                       'GameOver': pyspy.original.states.GameOver(self),
+                       'Correct': pyspy.original.states.Correct(self),
+                       'Error': pyspy.original.states.Error(self)}
 
+    def set_image(self, imageObj):
+        GameScreen.set_image(self, imageObj)
+        self.image.set_mask(self.level)
+
+class SpyThisScreen(GameScreen):
+    def __init__(self, gameControlObj, screenRect):
+        GameScreen.__init__(self, gameControlObj, screenRect)
+        self.spythis = True
+        self.states = {'NextLevel': pyspy.spythis.states.NextLevel(self),
+                       'Playing': pyspy.spythis.states.Playing(self),
+                       'GameOver': pyspy.spythis.states.GameOver(self),
+                       'Correct': pyspy.spythis.states.Correct(self),
+                       'Error': pyspy.original.states.Error(self)}
+
+    def set_image(self, imageObj):
+        GameScreen.set_image(self, imageObj)
+        self.image.set_spythis_masks()

@@ -38,7 +38,7 @@ class Error(pyspy.states.GameState):
             self.delay -= 1
         else:
             self.gameControl.music.unpause_track()
-            self.gameControl.setMode(MAIN_MENU)
+            self.gameScreen.quit()
 
     def eventHandle(self):
         # Don't allow escaping to main menu from here.
@@ -153,7 +153,7 @@ class GameOver(pyspy.states.GameState):
         else:
             self.gameControl.music.unpause_track()
             self.gameScreen.score.reset()
-            self.gameControl.setMode(MAIN_MENU)
+            self.gameScreen.quit()
 
     def eventHandle(self):
         # Don't allow escaping to main menu from here.

@@ -30,7 +30,7 @@ class GameState:
 
     def eventHandle(self):
         if self.gameControl.gameEvent.newkeys[K_ESCAPE]:
-            self.gameControl.setMode(MAIN_MENU)
+            self.gameScreen.quit()
 
     def draw(self, background, screen):
         pass

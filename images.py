@@ -36,9 +36,12 @@ class SpyImage(pygame.Surface):
         self.clue = pyspy.clue.ClueImage()
        
     def load_levels(self):
-        levels = []
+        levels = {'ispy':[], 'spythis':[]}
         for i in self.info.masks:
-            levels.append(i.level)
+            if i.spythis:
+                levels['spythis'].append(i.level)
+            else:
+                levels['ispy'].append(i.level)
         return levels
 
     def set_mask(self, level=1):

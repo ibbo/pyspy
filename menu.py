@@ -23,15 +23,14 @@ if DEBUG:
     import pdb
 
 class MenuItem():
-    def __init__(self, info, index):
+    def __init__(self, text, index):
         self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                         MENU_SIZE_NORMAL)
         self.bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
                                         MENU_SIZE_BIG)
         self.selected = 0
-        self.text = info[0]
+        self.text = text
         self.index = index
-        self.mode = info[1]
         self.renderedText = {}
         self.renderText()
 
@@ -121,7 +120,8 @@ class Menu:
             raise ValueError, "Direction must be either 'up' or 'down'"
         if self.selectedItem.index + nextItem < len(self.items) and \
                 self.selectedItem.index + nextItem >= 0:
-            self.move_sound.play()
+            if self.move_sound:
+                self.move_sound.play()
             self.selectedItem.deselect()
             self.selectedItem = self.items[self.selectedItem.index + nextItem]
             self.selectedItem.select()
