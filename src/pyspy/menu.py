@@ -22,7 +22,7 @@ from pyspy.utilities import *
 if DEBUG:
     import pdb
 
-class MenuItem():
+class MenuItem:
     def __init__(self, text, index):
         self.font = pygame.font.Font(os.path.join(FONT_DIR, TEXT_FONT),
                                         MENU_SIZE_NORMAL)

@@ -194,6 +194,7 @@ class NextLevel(pyspy.states.GameState):
     def enter(self):
         self.gameScreen.level += 1
         self.level_exists = self.gameScreen.set_level(self.gameScreen.level)
+        self.gameScreen.image.load_image()
         self.image = self.gameScreen.image
         self.delay = 1
         pygame.mouse.set_visible(True)

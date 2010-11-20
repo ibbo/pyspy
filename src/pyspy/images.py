@@ -27,14 +27,21 @@ from pyspy.constants import *
 class SpyImage(pygame.Surface):
     def __init__(self,size,name):
         pygame.Surface.__init__(self,size)
-        self.image, self.rect = pyspy.utilities.load_png(name, rootpath=LEVEL_DIR)
-        self.blit(self.image, (0,0))
+        self.name = name
+        self.image = None
+        self.rect = None
         self.info = pyspy.images.ImageInfo(name + '.png')
         self.mask = []
         self.levels = self.load_levels()
-        self.font = pygame.font.Font(os.path.join(FONT_DIR,'FreeMono.ttf'), 36)
+        self.font = pygame.font.Font(
+                os.path.join(FONT_DIR,'FreeMono.ttf'), 36)
         self.clue = pyspy.clue.ClueImage()
        
+    def load_image(self):
+        self.image, self.rect = pyspy.utilities.load_png(self.name,
+                rootpath=LEVEL_DIR)
+        self.blit(self.image, (0,0))
+
     def load_levels(self):
         levels = {'ispy':[], 'spythis':[]}
         for i in self.info.masks:

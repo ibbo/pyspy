@@ -130,6 +130,7 @@ class NextLevel(pyspy.states.GameState):
             self.gameScreen.state.enter(1)
             return
         self.level_exists = self.gameScreen.set_level(self.gameScreen.level)
+        self.gameScreen.image.load_image()
         self.image = self.gameScreen.image
         self.image.set_alpha(0)
         self.delay = FADE_IN_TIME
