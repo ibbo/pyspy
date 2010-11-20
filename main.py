@@ -26,54 +26,6 @@ from pyspy.constants import *
 if DEBUG:
     import pdb
 
-class QuitMode:
-    def __init__(self):
-        pass
-
-    def eventHandle(self):
-        pass
-
-    def update(self):
-        pass
-
-    def reset(self, type):
-        pass
-
-    def draw(self, background, screen):
-        pass
-
-class GameControl:
-    def __init__(self):
-        self.gameEvent = pyspy.events.GameEvent()
-        self.currentMode = 0
-        self.modes = {}
-        self.players = []
-        self.playerCur = 0
-        self.updated = False
-        self.music = pyspy.sound.MusicControl()
-		
-    def addModes(self, newModes):
-        """Insert the new mode into the modes list"""
-        for k,v in newModes.items():
-            self.modes[k] = v
-        
-    def setMode(self, newMode, type = 0):
-        """Set the new mode, and reset it"""
-        self.currentMode = self.modes[newMode]
-        
-        self.currentMode.reset(type)
-
-    def update(self):
-        """Update the current mode and events"""
-        self.gameEvent.update()
-        self.music.update()
-        
-        self.currentMode.eventHandle()
-        self.currentMode.update()
-
-    def draw(self, background, screen):
-        self.currentMode.draw(background, screen)
-
 def usage():
     usage_string = """
     main.py - Play pySpy!
@@ -84,6 +36,19 @@ def usage():
     print usage_string
 
 def main(argv):
+    # Check that compatible versions of pygame and python are being used
+    pygame_ver = pygame.version.vernum
+    if pygame_ver[0] < 1 or (pygame_ver[0] < 2 and pygame_ver[1] < 9):
+        print "Requires pygame 1.9.0 or greater"
+        return 0
+    python_ver = sys.version_info
+    if python_ver[0] < 2 or (python_ver[0] > 1 and python_ver[1] < 6):
+        print "Requires python 2.6 or greater"
+        return 0
+    if python_ver[0] > 2:
+        print "This is not yet compatible with python 3.0 or greater"
+        return 0
+
     FULL = False
     # Command-line argument handling
     try:
@@ -115,19 +80,6 @@ def main(argv):
                 print "No updates available"
             sys.exit()
     
-    # Check that compatible versions of pygame and python are being used
-    pygame_ver = pygame.version.vernum
-    if pygame_ver[0] < 1 or (pygame_ver[0] < 2 and pygame_ver[1] < 9):
-        print "Requires pygame 1.9.0 or greater"
-        return 0
-    python_ver = sys.version_info
-    if python_ver[0] < 2 or (python_ver[0] > 1 and python_ver[1] < 6):
-        print "Requires python 2.6 or greater"
-        return 0
-    if python_ver[0] > 2:
-        print "This is not yet compatible with python 3.0 or greater"
-        return 0
-
     # Initialise the screen
     pygame.init()
     modes = pygame.display.list_modes()
@@ -173,7 +125,7 @@ def main(argv):
     # Set the menus
     front_menu = pyspy.menu.Menu(["I Spy", "Spy This", "Update Levels", "Quit"])
 
-    gameControl = GameControl()
+    gameControl = pyspy.control.GameControl()
     screenRect = screen.get_rect()
     modes = {"Main Menu": pyspy.screens.RootMenu(gameControl, screenRect,
         front_menu),
@@ -182,7 +134,7 @@ def main(argv):
         "Update Levels": pyspy.screens.UpdateScreen(gameControl, screenRect),
         "Instructions":
             pyspy.screens.InstructionsScreen(gameControl, screenRect),
-            "Quit": QuitMode()}
+            "Quit": pyspy.control.QuitMode()}
     gameControl.addModes(modes)
     gameControl.setMode("Main Menu")
 

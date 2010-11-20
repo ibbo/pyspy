@@ -30,4 +30,5 @@ import pyspy.effects
 import pyspy.gui
 import pyspy.events
 import pyspy.screens
+import pyspy.control
 from pyspy.constants import *
