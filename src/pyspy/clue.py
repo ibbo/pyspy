@@ -151,7 +151,7 @@ class ClueImage:
     def __init__(self):
         self.text = ''
         #TODO: Set the font size more carefully
-        self.font = pygame.font.Font(os.path.join('fonts', 'FreeMono.ttf'), 36)
+        self.font = pygame.font.Font(os.path.join(FONT_DIR, 'FreeMono.ttf'), 36)
         self.colour = CLUE_COLOUR
         self.image_base = []
         self.image = self.font.render('', 1, self.colour)

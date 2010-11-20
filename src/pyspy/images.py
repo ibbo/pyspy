@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 
-# A generic image class for storing info about the images
+"""A generic image class for storing info about the images"""
 import os
 import random
 import pygame
@@ -27,12 +27,12 @@ from pyspy.constants import *
 class SpyImage(pygame.Surface):
     def __init__(self,size,name):
         pygame.Surface.__init__(self,size)
-        self.image, self.rect = pyspy.utilities.load_png(name, rootpath='levels')
+        self.image, self.rect = pyspy.utilities.load_png(name, rootpath=LEVEL_DIR)
         self.blit(self.image, (0,0))
         self.info = pyspy.images.ImageInfo(name + '.png')
         self.mask = []
         self.levels = self.load_levels()
-        self.font = pygame.font.Font(os.path.join('fonts','FreeMono.ttf'), 36)
+        self.font = pygame.font.Font(os.path.join(FONT_DIR,'FreeMono.ttf'), 36)
         self.clue = pyspy.clue.ClueImage()
        
     def load_levels(self):
@@ -67,7 +67,7 @@ class SpyImage(pygame.Surface):
             return False
 
 class ImageInfo:
-    def __init__(self, filename, path='levels'):
+    def __init__(self, filename, path=LEVEL_DIR):
         self.basefile = filename
         self.has_spythis = False
         self.masks = self.initMasks(path)
@@ -103,7 +103,7 @@ class ImageInfo:
 class ImageMask:
     def __init__(self, filename, level, clue):
         self.image, self.rect = \
-                pyspy.utilities.load_png(filename, rootpath='levels')
+                pyspy.utilities.load_png(filename, rootpath=LEVEL_DIR)
         self.mask = pygame.mask.from_surface(self.image)
         self.mask_rect = self.image.get_bounding_rect()
         self.spythis_rect = Rect(self.mask_rect)

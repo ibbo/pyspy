@@ -24,7 +24,7 @@ class MenuScreen:
     def __init__(self, gameControlObj, screenRect, menu):
         self.gameControl = gameControlObj
         move_sound = pyspy.sound.SoundEffect(
-                        os.path.join('sounds','menu_move.wav'))
+                        os.path.join(SOUND_DIR,'menu_move.wav'))
         self.menu = menu
         self.menu.move_sound = move_sound
         self.firstDraw = 1
@@ -80,7 +80,7 @@ class RootMenu(MenuScreen):
 class UpdateScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
-        self.text_font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 16)
+        self.text_font = pygame.font.Font(os.path.join(FONT_DIR, MONO_FONT), 16)
         self.back_button = pyspy.gui.Button('back', can_disable=False)
         self.back_button.set_callback(self.quit)
         self.back_button.rect.topright = screenRect.topright
@@ -89,7 +89,7 @@ class UpdateScreen:
         self.downloading = False
         self.download_button = pyspy.gui.Button('download')
         self.download_button.set_callback(self.download)
-        self.paths = ['levels', 'levels/spythis']
+        self.paths = [REMOTE_LEVEL_DIR, REMOTE_LEVEL_DIR+'/spythis']
         self.drawn = 0
         self.checked = 0
         self.updatesAvailable = False
@@ -158,7 +158,7 @@ class UpdateScreen:
 class InstructionsScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
-        self.text_font = pygame.font.Font(os.path.join('fonts',MONO_FONT), 22)
+        self.text_font = pygame.font.Font(os.path.join(FONT_DIR,MONO_FONT), 22)
         self.filename = 'Instructions.txt'
         self.lines = self.get_instructions()
         self.back_button = pyspy.gui.Button('back', can_disable=False)

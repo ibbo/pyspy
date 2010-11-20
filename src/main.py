@@ -17,7 +17,6 @@
 
 import sys, os, random, math, getopt
 import re
-sys.path.append(os.path.split(os.getcwd())[0])
 import pygame
 from pygame.locals import *
 import pyspy
@@ -107,7 +106,7 @@ def main(argv):
     background.blit(logo, logo_rect)
     background = background.convert_alpha()
 
-    bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
+    bigFont = pygame.font.Font(os.path.join(FONT_DIR, TEXT_FONT),
                                     MENU_SIZE_BIG)
     loadingText = bigFont.render('Loading...', 1, (255,255,255))
     loadingRect = loadingText.get_rect()

@@ -1,4 +1,4 @@
-#This denotes that pySpy is a package
+#!/usr/bin/python
 #    This file is part of pySpy.
 #
 #    pySpy is free software: you can redistribute it and/or modify
@@ -14,21 +14,24 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 
-import pyspy.images
-import pyspy.utilities
-import pyspy.clue
-import pyspy.timer
-import pyspy.menu
-import pyspy.levels
-import pyspy.update
-import pyspy.states
-import pyspy.original.states
-import pyspy.spythis.states
-import pyspy.bonus
-import pyspy.sound
-import pyspy.effects
-import pyspy.gui
-import pyspy.events
-import pyspy.screens
-import pyspy.control
-from pyspy.constants import *
+import os
+import sys
+import pyspy
+
+def update():
+    """update() - Downloads updates for pyspy levels if available
+
+    Returns false if no updates were available"""
+    gamesToUpdate = {'I Spy':'levels', 'SpyThis': 'levels/spythis'}
+    updates = False
+    for (game, path) in gamesToUpdate.items():
+        print "Checking for updates to %s" %(game)
+        updates = pyspy.levels.checkForUpdates(remotePath=path)
+        if updates:
+            status = pyspy.levels.DownloadStatus()
+            pyspy.levels.downloadUpdates(updates, statusObj=status)
+            updates = True
+    return updates
+
+if __name__ == '__main__':
+    update()

@@ -13,12 +13,18 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
+"""This module contains visual special effects used in pySpy"""
 import pygame
 import pyspy
 from pygame.locals import *
 from pyspy.constants import *
 
 class DistanceIndicator(pygame.Surface):
+    """An indicator of distance away from the target
+    
+    The DistanceIndicator is a ring which changes colour depending on how close
+    the player is to getting the correct target. When very close it burns.
+    """
     def __init__(self):
         pygame.Surface.__init__(self, (100,100), pygame.SRCALPHA)
         self.anim_image, self.anim_rect = pyspy.utilities.load_png('hot.png')

@@ -31,9 +31,9 @@ class LevelNumber:
 class LevelIndicator(pygame.Surface):
     def __init__(self, size):
         self.font_big = pygame.font.Font(
-                os.path.join('fonts',TEXT_FONT), 44)
+                os.path.join(FONT_DIR,TEXT_FONT), 44)
         self.font = pygame.font.Font(
-                os.path.join('fonts',TEXT_FONT), 36)
+                os.path.join(FONT_DIR,TEXT_FONT), 36)
 
         self.mag_image, self.mag_rect = pyspy.utilities.load_png('level_mag')
         self.levels = range(1, MAX_LEVEL+1)
@@ -71,7 +71,7 @@ class LevelIndicator(pygame.Surface):
 class Score:
     def __init__(self):
         self.score = 0
-        self.font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 26)
+        self.font = pygame.font.Font(os.path.join(FONT_DIR, MONO_FONT), 26)
         self.rect = []
         self.old_rect = []
         self.render()
@@ -109,7 +109,7 @@ class Button:
     def __init__(self, name, callback=None, can_disable=True):
         self.image, self.rect = pyspy.utilities.load_png(name)
         self.name = name.replace('_', ' ')
-        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
+        self.font = pygame.font.Font(os.path.join(FONT_DIR, TEXT_FONT),
                                         BONUS_SIZE)
         self.active = True
         if can_disable:

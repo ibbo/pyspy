@@ -63,3 +63,11 @@ if DEBUG:
     REVEALS = 1000
 # Server address
 SERVER_URL = 'http://pyspygame.sourceforge.net/'
+# Directories
+CURSOR_DIR = '../cursors'
+IMAGE_DIR = '../images'
+MUSIC_DIR = '../music'
+SOUND_DIR = '../sounds'
+LEVEL_DIR = '../levels'
+FONT_DIR = '../fonts'
+REMOTE_LEVEL_DIR = 'levels'

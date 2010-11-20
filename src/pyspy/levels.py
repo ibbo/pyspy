@@ -38,16 +38,16 @@ def parseLevelName(levelName):
     else:
         return None
 
-def getLevels(path='levels'):
+def getLevels(path=LEVEL_DIR):
     p = re.compile('^[a-zA-Z]+\.png')
     levels = [pyspy.utilities.strip_ext(i) \
         for i in os.listdir(path) if p.match(i)]
     return levels
 
-def checkLevel(level, path='levels'):
+def checkLevel(level, path=LEVEL_DIR):
     return level+'.png' in os.listdir(path)
 
-def checkForUpdates(url=SERVER_URL, localPath='levels', remotePath='levels'):
+def checkForUpdates(url=SERVER_URL, localPath=LEVEL_DIR, remotePath=REMOTE_LEVEL_DIR):
     opener = urllib.FancyURLopener({})
     f = opener.open(url+'/'+remotePath+'/'+'levels.md5')
     levels = f.readlines()
@@ -113,7 +113,7 @@ class DownloadStatus:
 
 class GUIDownloadStatus(DownloadStatus):
     def __init__(self):
-        self.text_font = pygame.font.Font(os.path.join('fonts', MONO_FONT), 16)
+        self.text_font = pygame.font.Font(os.path.join(FONT_DIR, MONO_FONT), 16)
         self.set_text('Checking for updates')
         self.width = 400
         self.height = 30
@@ -168,7 +168,7 @@ class GUIDownloadStatus(DownloadStatus):
 
 
 def downloadUpdates(updateList, url=SERVER_URL,
-                        localPath='levels', statusObj=None):
+                        localPath=LEVEL_DIR, statusObj=None):
     status = statusObj
     for i in updateList:
         status.set_file(i)
@@ -179,7 +179,7 @@ def downloadUpdates(updateList, url=SERVER_URL,
             status.quit()
     status.quit()
 
-def generateLevel(level, path='levels'):
+def generateLevel(level, path=LEVEL_DIR):
     if os.name == 'nt':
         rootPath = os.environ['USERPROFILE']
     else:

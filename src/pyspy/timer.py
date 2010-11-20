@@ -25,7 +25,7 @@ class Timer(pygame.Surface):
         # TODO: All colours should be variables which can be changed
         self.fill((100,100,100))
         self.set_colorkey((100,100,100))
-        self.font = pygame.font.Font(os.path.join('fonts',TEXT_FONT), 30)
+        self.font = pygame.font.Font(os.path.join(FONT_DIR,TEXT_FONT), 30)
         self.text = self.font.render('Time: ', 1, (211,255,33), (100,100,100))
         self.blit(self.text,(0,0))
         # TODO: The drawing rectangle should be passed as an argument

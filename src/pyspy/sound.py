@@ -29,7 +29,7 @@ class SoundEffect(pygame.mixer.Sound):
 
 class MusicControl:
     def __init__(self):
-        self.music_dir = 'music'
+        self.music_dir = MUSIC_DIR
         self.filenames = self.get_filenames()
         self.filenames = [i for i in self.filenames if i.endswith('.mid')\
                                                     or i.endswith('.ogg')]

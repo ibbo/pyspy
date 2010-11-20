@@ -32,7 +32,7 @@ def strip_ext(filename):
     else:
         return filename
 
-def load_png(name, rootpath='images'):
+def load_png(name, rootpath=IMAGE_DIR):
     """ Load image and return image object"""
     if name.endswith('.png'):    
 	    fullname = os.path.join(rootpath, name)

@@ -14,25 +14,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
-sys.path.append(os.path.split(os.getcwd())[0])
-import pyspy
+from distutils.core import setup
 
-def update():
-    """update() - Downloads updates for pyspy levels if available
-
-    Returns false if no updates were available"""
-    gamesToUpdate = {'I Spy':'levels', 'SpyThis': 'levels/spythis'}
-    updates = False
-    for (game, path) in gamesToUpdate.items():
-        print "Checking for updates to %s" %(game)
-        updates = pyspy.levels.checkForUpdates(remotePath=path)
-        if updates:
-            status = pyspy.levels.DownloadStatus()
-            pyspy.levels.downloadUpdates(updates, statusObj=status)
-            updates = True
-    return updates
-
-if __name__ == '__main__':
-    update()
+setup(name='pyspy',
+      version='1.1a1',
+      description='An "I Spy" game',
+      author='Thomas Ibbotson',
+      author_email='thomas.ibbotson@gmail.com',
+      url='http://launchpad.net/pyspy',
+      packages = ['pyspy', 'pyspy.original', 'pyspy.spythis'],
+      package_dir={'pyspy': 'src/pyspy', 'pyspy.original': 'src/pyspy/original', 'pyspy.spythis': 'src/pyspy/spythis'}
+     )

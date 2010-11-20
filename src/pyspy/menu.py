@@ -24,9 +24,9 @@ if DEBUG:
 
 class MenuItem():
     def __init__(self, text, index):
-        self.font = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
+        self.font = pygame.font.Font(os.path.join(FONT_DIR, TEXT_FONT),
                                         MENU_SIZE_NORMAL)
-        self.bigFont = pygame.font.Font(os.path.join('fonts', TEXT_FONT),
+        self.bigFont = pygame.font.Font(os.path.join(FONT_DIR, TEXT_FONT),
                                         MENU_SIZE_BIG)
         self.selected = 0
         self.text = text

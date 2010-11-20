@@ -64,10 +64,10 @@ class Correct(pyspy.states.GameState):
 class GameOver(pyspy.states.GameState):
     def __init__(self, gameScreen):
         pyspy.states.GameState.__init__(self,gameScreen)
-        self.font = pygame.font.Font(os.path.join('fonts',TEXT_FONT), 50)
+        self.font = pygame.font.Font(os.path.join(FONT_DIR,TEXT_FONT), 50)
         self.delay = 250
         self.buttons = gameScreen.buttons
-        self.won_sound = pyspy.sound.SoundEffect(os.path.join('sounds',
+        self.won_sound = pyspy.sound.SoundEffect(os.path.join(SOUND_DIR,
             'brass_fanfare_4.wav'))
 
     def enter(self, won):
@@ -220,7 +220,7 @@ class Playing(pyspy.states.GameState):
         self.buttons['reveal'].set_callback(
                 pyspy.bonus.Bonus(self.reveal_bonus, REVEALS))
         self.yipee_sound = pyspy.sound.SoundEffect(
-                os.path.join('sounds', 'yipee.wav'))
+                os.path.join(SOUND_DIR, 'yipee.wav'))
         self.indicator = pyspy.effects.DistanceIndicator()
         self.draw_tick = False
         self.tick_timer = TICK_TIME
@@ -244,8 +244,8 @@ class Playing(pyspy.states.GameState):
             self.timer.set_delay(*TIMER_DELAY['impossible'])
             
         pygame.mouse.set_cursor(*pygame.cursors.load_xbm(
-            os.path.join('cursors', 'mag.xbm'),
-            os.path.join('cursors', 'mag-mask.xbm')))
+            os.path.join(CURSOR_DIR, 'mag.xbm'),
+            os.path.join(CURSOR_DIR, 'mag-mask.xbm')))
         
     def update(self):
         self.indicator.update()
