@@ -15,6 +15,17 @@
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 
 from distutils.core import setup
+import glob
+import os,sys
+
+pathFile = open(os.path.join('src','pyspy','pathDef.py'), 'w')
+pathFile.write("CURSOR_DIR = '%s/share/pyspy/cursors'\n" % sys.prefix)
+pathFile.write("IMAGE_DIR = '%s/share/pyspy/images'\n" % sys.prefix)
+pathFile.write("MUSIC_DIR = '%s/share/pyspy/music'\n" % sys.prefix)
+pathFile.write("SOUND_DIR = '%s/share/pyspy/sounds'\n" % sys.prefix)
+pathFile.write("LEVEL_DIR = '%s/share/pyspy/levels'\n" % sys.prefix)
+pathFile.write("FONT_DIR = '%s/share/pyspy/fonts'\n" % sys.prefix)
+pathFile.close()
 
 setup(name='pyspy',
       version='1.1a1',
@@ -23,5 +34,16 @@ setup(name='pyspy',
       author_email='thomas.ibbotson@gmail.com',
       url='http://launchpad.net/pyspy',
       packages = ['pyspy', 'pyspy.original', 'pyspy.spythis'],
-      package_dir={'pyspy': 'src/pyspy', 'pyspy.original': 'src/pyspy/original', 'pyspy.spythis': 'src/pyspy/spythis'}
+      package_dir={'pyspy': 'src/pyspy',
+                   'pyspy.original': 'src/pyspy/original',
+                   'pyspy.spythis': 'src/pyspy/spythis'},
+      scripts=['src/scripts/update.py', 'src/scripts/pyspy'],
+      data_files=[
+          ('share/pyspy/cursors', glob.glob(os.path.join('cursors','*.xbm'))),
+          ('share/pyspy/fonts', glob.glob(os.path.join('fonts','*.ttf'))),
+          ('share/pyspy/images', glob.glob(os.path.join('images','*.png'))),
+          ('share/pyspy/levels', glob.glob(os.path.join('levels','*.png'))),
+          ('share/pyspy/music', glob.glob(os.path.join('music','*.mid'))),
+          ('share/pyspy/sounds', glob.glob(os.path.join('sounds','*.wav'))),
+          ]
      )

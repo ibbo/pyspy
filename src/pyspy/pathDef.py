@@ -1,0 +1,6 @@
+CURSOR_DIR = '/usr/share/pyspy/cursors'
+IMAGE_DIR = '/usr/share/pyspy/images'
+MUSIC_DIR = '/usr/share/pyspy/music'
+SOUND_DIR = '/usr/share/pyspy/sounds'
+LEVEL_DIR = '/usr/share/pyspy/levels'
+FONT_DIR = '/usr/share/pyspy/fonts'

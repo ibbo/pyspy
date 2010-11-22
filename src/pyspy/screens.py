@@ -19,6 +19,7 @@ import pygame
 import pyspy
 from pygame.locals import *
 from pyspy.constants import *
+import pyspy.instructions
 
 class MenuScreen:
     def __init__(self, gameControlObj, screenRect, menu):
@@ -159,7 +160,6 @@ class InstructionsScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
         self.text_font = pygame.font.Font(os.path.join(FONT_DIR,MONO_FONT), 22)
-        self.filename = 'Instructions.txt'
         self.lines = self.get_instructions()
         self.back_button = pyspy.gui.Button('back', can_disable=False)
         self.back_button.set_callback(self.quit)
@@ -169,14 +169,7 @@ class InstructionsScreen:
         self.drawn = 0
 
     def get_instructions(self):
-        f = file(self.filename, 'r')
-        raw_lines = f.readlines()
-        f.close()
-        lines = [i.strip() for i in raw_lines]
-        rendered_lines = []
-        for i in lines:
-            rendered_lines.append(self.text_font.render(i,1,(0,0,0)))
-        return rendered_lines
+        return pyspy.instructions.instructions
 
     def update(self):
         pass

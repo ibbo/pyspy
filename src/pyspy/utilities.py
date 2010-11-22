@@ -15,9 +15,9 @@
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 
 # pySpy_utilities - utility functions used in pySpy
-import pygame, os
+import pygame, os, sys
 from pygame.locals import *
-from constants import *
+from pyspy.constants import *
 import pyspy.images as ims
 import re
 

@@ -30,4 +30,6 @@ import pyspy.gui
 import pyspy.events
 import pyspy.screens
 import pyspy.control
+import pyspy.main
+import pyspy.instructions
 from pyspy.constants import *

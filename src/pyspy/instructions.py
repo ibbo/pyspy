@@ -1,4 +1,5 @@
-pySpy is a clone of a Quiz Machine game we have 
+#!/usr/bin/python
+instructions = """pySpy is a clone of a Quiz Machine game we have 
 in our college bar, except this version is free!
 
 You can't win any money in this version, 
@@ -28,4 +29,4 @@ stuck. The number is limited so use them wisely.
      in the clue.
    - Add letters: Shows some more letters in the
      clue.
-
+"""

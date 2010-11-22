@@ -14,6 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 import pygame
+from pyspy.pathDef import *
 #constants.py - defines constants for use in pySpy
 # The offset of the image from the screen
 X_OFFSET = 20
@@ -64,10 +65,4 @@ if DEBUG:
 # Server address
 SERVER_URL = 'http://pyspygame.sourceforge.net/'
 # Directories
-CURSOR_DIR = '../cursors'
-IMAGE_DIR = '../images'
-MUSIC_DIR = '../music'
-SOUND_DIR = '../sounds'
-LEVEL_DIR = '../levels'
-FONT_DIR = '../fonts'
 REMOTE_LEVEL_DIR = 'levels'
