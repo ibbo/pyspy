@@ -28,7 +28,7 @@ pathFile.write("FONT_DIR = '%s/share/pyspy/fonts'\n" % sys.prefix)
 pathFile.close()
 
 setup(name='pyspy',
-      version='1.1a1',
+      version='1.1-alpha2',
       description='An "I Spy" game',
       author='Thomas Ibbotson',
       author_email='thomas.ibbotson@gmail.com',
