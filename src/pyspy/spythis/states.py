@@ -312,14 +312,12 @@ class Playing(pyspy.states.GameState):
     def draw(self, background, screen):
         timer_rect = self.timer.get_rect()
         timer_rect.topleft = (X_OFFSET,10)
-        screen.blit(background, timer_rect, timer_rect)
         pos_rect = Rect(self.tick_rect)
         pos_rect.left += X_OFFSET
         pos_rect.top += Y_OFFSET
         blit_rect = Rect(self.tick_rect)
         blit_rect.left -= X_OFFSET
         blit_rect.top -= Y_OFFSET
-        screen.blit(self.timer, timer_rect)
         if self.draw_tick:
             screen.blit(background, self.tick_rect, self.tick_rect)
             screen.blit(self.image, self.tick_rect, blit_rect)
@@ -347,6 +345,9 @@ class Playing(pyspy.states.GameState):
         #FIXME: Shouldn't have to manually let the score know to redraw
         self.gameScreen.score.changed = True
         self.gameScreen.score.draw(background, screen)
+        # The timer is drawn last to fix LP:681909
+        screen.blit(background, timer_rect, timer_rect)
+        screen.blit(self.timer, timer_rect)
 
     def reset(self):
         self.indicator.reset()
