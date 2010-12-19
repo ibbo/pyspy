@@ -17,9 +17,11 @@ import os
 import random
 import math
 import pygame
+import pygame.gfxdraw
 import pyspy
 from pygame.locals import *
 from pyspy.constants import *
+from pyspy.utilities import add_to_rect, add_2D_vectors
 
 class Correct(pyspy.states.GameState):
     def __init__(self, gameScreen):
@@ -56,9 +58,9 @@ class Correct(pyspy.states.GameState):
         screen.blit(self.image, (X_OFFSET, Y_OFFSET))
         if not self.drawn:
             for mask in self.image.masks:
-                if mask.dirty:
-                    screen.blit(background, mask.spythis_rect, mask.spythis_rect)
-                    mask.dirty = False
+                bg_rect = pyspy.utilities.add_to_rect(
+                        mask.spythis_rect, (-2, -2, 4, 4))
+                screen.blit(background, bg_rect, bg_rect)
             self.drawn = 1
 
 class GameOver(pyspy.states.GameState):
@@ -135,6 +137,7 @@ class NextLevel(pyspy.states.GameState):
         self.image.set_alpha(0)
         self.delay = FADE_IN_TIME
         pygame.mouse.set_visible(True)
+        self.gameScreen.active_masks = self.image.masks
         self.init_layout()
         self.drawn_once = False
         self.draw_last = False
@@ -150,6 +153,7 @@ class NextLevel(pyspy.states.GameState):
             self.gameScreen.state = self.gameScreen.states['Playing']
             self.gameScreen.state.enter()
         elif self.delay == 1:
+            # Only draw the clues after we have faded in
             self.draw_last = True
             self.delay -= 1
         else:
@@ -170,13 +174,7 @@ class NextLevel(pyspy.states.GameState):
         self.gameScreen.score.rect.topright = \
                 self.gameScreen.screenRect.topright
         self.gameScreen.score.rect.move_ip(-40, 210)
-        last = self.image.rect.bottomleft
-        bottoms = []
-        for i in self.image.masks:
-            i.rect.topleft = self.image.rect.topleft
-            i.spythis_rect.topleft = last
-            bottoms.append(i.spythis_rect.bottom)
-            last = i.spythis_rect.topright
+        self.arrange_masks()
         if not self.drawn_once:
             self.buttons['reveal'].rect.centerx = \
                 self.gameScreen.score.rect.centerx
@@ -193,6 +191,17 @@ class NextLevel(pyspy.states.GameState):
                 self.buttons['pause'].rect.topright
             self.buttons['next'].rect.move_ip(5, 0)
 
+    def arrange_masks(self):
+        last = pygame.rect.Rect(self.image.rect)
+        last.bottom += 5
+        last = last.bottomleft
+        bottoms = []
+        for mask in self.gameScreen.active_masks:
+            mask.rect.topleft = self.image.rect.topleft
+            mask.spythis_rect.topleft = add_2D_vectors(last, [5, 0])
+            bottoms.append(mask.spythis_rect.bottom)
+            last = mask.spythis_rect.topright
+
     def draw(self, background, screen):
         screen.blit(background, self.image.rect, self.image.rect)
         screen.blit(self.image, self.image.rect)
@@ -207,9 +216,15 @@ class NextLevel(pyspy.states.GameState):
             self.gameScreen.score.draw(background, screen)
             self.drawn_once = True
         if self.draw_last:
-            for i in self.image.masks:
-                new, brects = self.gameScreen.image_from_mask(i)
-                screen.blit(new, i.spythis_rect, i.mask_rect)
+            for mask in self.gameScreen.active_masks:
+                new, brects = self.gameScreen.image_from_mask(mask)
+                radius = math.floor(mask.spythis_rect.w/2.0)
+                screen.blit(new, mask.spythis_rect, mask.mask_rect)
+                pygame.gfxdraw.aacircle(screen,
+                        mask.spythis_rect.x + radius,
+                        mask.spythis_rect.y + radius,
+                        radius,
+                        pygame.Color('white'))
             self.draw_last = False
 
 class Playing(pyspy.states.GameState):
@@ -283,15 +298,15 @@ class Playing(pyspy.states.GameState):
                 y = mousepos[1]-self.image.rect.top
                 distances = []
                 found_mask = False
-                for i in self.image.masks:
-                    if i.mask.get_at((x,y)):
-                        if not i.found:
-                            i.found = True
-                            i.dirty = True
+                for curMask in self.gameScreen.active_masks:
+                    if curMask.mask.get_at((x,y)):
+                        if not curMask.found:
+                            curMask.found = True
+                            curMask.dirty = True
                             found_mask = True
                     else:
-                        if not i.found:
-                            distances.append(i.get_distance((x,y)))
+                        if not curMask.found:
+                            distances.append(curMask.get_distance((x,y)))
                 if not found_mask:
                     self.timer.remove_time()
                     self.indicator.set_pos(mousepos[0], mousepos[1])
@@ -308,7 +323,35 @@ class Playing(pyspy.states.GameState):
                 for button in self.buttons.values():
                     if button.rect.collidepoint(mousepos) and button.active:
                         button()
-                        
+    
+    def arrange_masks(self):
+        last = pygame.rect.Rect(self.image.rect)
+        last.bottom += 5
+        last = last.bottomleft
+        bottoms = []
+        for mask in self.gameScreen.active_masks:
+            mask.rect.topleft = self.image.rect.topleft
+            mask.spythis_rect.topleft = add_2D_vectors(last, [5, 0])
+            bottoms.append(mask.spythis_rect.bottom)
+            last = mask.spythis_rect.topright
+
+    def redraw_masks(self, background, screen):
+        for mask in self.gameScreen.active_masks:
+            new, brects = self.gameScreen.image_from_mask(mask)
+            radius = math.floor(mask.spythis_rect.w/2.0)
+            screen.blit(new, mask.spythis_rect, mask.mask_rect)
+            pygame.gfxdraw.aacircle(screen,
+                    mask.spythis_rect.x + radius,
+                    mask.spythis_rect.y + radius,
+                    radius,
+                    (255,255,255))
+
+    def clear_masks(self, background, screen):
+        for mask in self.gameScreen.active_masks:
+            bg_rect = pyspy.utilities.add_to_rect(
+                    mask.spythis_rect, (-2, -2, 4, 4))
+            screen.blit(background, bg_rect, bg_rect)
+
     def draw(self, background, screen):
         timer_rect = self.timer.get_rect()
         timer_rect.topleft = (X_OFFSET,10)
@@ -335,10 +378,21 @@ class Playing(pyspy.states.GameState):
         for button in self.buttons.values():
             if button.dirty:
                 button.draw(background, screen)
-        for mask in self.image.masks:
+        
+        # Flag if the masks need to be redrawn
+        dirty = False
+        toRemove = []
+        for mask in self.gameScreen.active_masks:
             if mask.dirty:
-                screen.blit(background, mask.spythis_rect, mask.spythis_rect)
                 mask.dirty = False
+                toRemove.append(mask)
+                dirty = True
+        if dirty:
+            self.clear_masks(background, screen)
+            for mask in toRemove:
+                self.gameScreen.active_masks.remove(mask)
+            self.arrange_masks()
+            self.redraw_masks(background, screen)
 
         # Draw the distance indicator
         self.indicator.draw(background, screen, self.image)

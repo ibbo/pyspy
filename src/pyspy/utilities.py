@@ -24,6 +24,17 @@ import re
 if DEBUG:
     import pdb
 
+def add_to_rect(rect, to_add):
+    newrect = pygame.rect.Rect(rect)
+    newrect.x += to_add[0];
+    newrect.y += to_add[1];
+    newrect.w += to_add[2];
+    newrect.h += to_add[3];
+    return newrect
+
+def add_2D_vectors(v1, v2):
+    return [v1[0]+v2[0], v1[1]+v2[1]]
+
 def strip_ext(filename):
     p = re.compile('(.*)\.[a-zA-Z0-9]*\s?$')
     m = p.match(filename)
