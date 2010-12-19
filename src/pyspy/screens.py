@@ -21,6 +21,9 @@ from pygame.locals import *
 from pyspy.constants import *
 import pyspy.instructions
 
+if DEBUG:
+    import pdb
+
 class MenuScreen:
     def __init__(self, gameControlObj, screenRect, menu):
         self.gameControl = gameControlObj
@@ -204,6 +207,7 @@ class GameScreen:
     def __init__(self, gameControlObj, screenRect):
         self.gameControl = gameControlObj
         self.level = 0
+        self.level_db = pyspy.database.DictDatabase()
         self.screenRect = screenRect
         self.score = pyspy.gui.Score()
         self.loaded = False
@@ -289,13 +293,16 @@ class GameScreen:
             self.images = []
             for i in self.levels:
                 if pyspy.levels.checkLevel(i):
-                    self.images.append(pyspy.images.SpyImage(pyspy.images.IMAGE_SIZE, i))
+                    pyspy.database.load_database_from_file(self.level_db, i)
                 else:
                     print "Generating level: %s" %(i)
                     pyspy.levels.generateLevel(i)
+            # Get all the images stored in the database and store them locally
+            self.images = self.level_db.get_image(None)
             self.loaded = True
 
         for i in self.images:
+            i.info.initMasks(self.level_db)
             for mask in i.info.masks:
                 mask.used = False
 

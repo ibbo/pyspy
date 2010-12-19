@@ -85,12 +85,14 @@ class ImageInfo:
     def __init__(self, filename, path=LEVEL_DIR):
         self.basefile = filename
         self.has_spythis = False
-        self.masks = self.initMasks(path)
+        self.masks = []
         
-    def initMasks(self, path):
+    def initMasks(self, db):
         base_name = pyspy.utilities.strip_ext(self.basefile)
-        masks, self.has_spythis = pyspy.levels.getMasksForLevel(base_name)
-        return masks
+        self.masks = db.get_mask(base_name)
+        for mask in self.masks:
+            if mask.spythis:
+                self.has_spythis = True
 
     def addMask(self, mask):
         self.masks.append(mask)

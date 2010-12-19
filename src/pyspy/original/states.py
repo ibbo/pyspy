@@ -199,7 +199,6 @@ class NextLevel(pyspy.states.GameState):
         self.delay = 1
         pygame.mouse.set_visible(True)
         self.init_layout()
-        
 
     def update(self):
         if self.gameScreen.level > 10:

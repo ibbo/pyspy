@@ -1,4 +1,4 @@
-#This denotes that pySpy is a package
+#The unit tests for pySpy.
 #    This file is part of pySpy.
 #
 #    pySpy is free software: you can redistribute it and/or modify
@@ -14,23 +14,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pySpy.  If not, see <http://www.gnu.org/licenses/>.
 
-import pyspy.images
-import pyspy.utilities
-import pyspy.clue
-import pyspy.timer
-import pyspy.menu
-import pyspy.levels
-import pyspy.states
-import pyspy.original.states
-import pyspy.spythis.states
-import pyspy.bonus
-import pyspy.sound
-import pyspy.effects
-import pyspy.gui
-import pyspy.events
-import pyspy.screens
-import pyspy.control
-import pyspy.main
-import pyspy.instructions
-import pyspy.database
-from pyspy.constants import *
+import pyspy.unittest.database

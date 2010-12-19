@@ -55,6 +55,15 @@ class DatabaseTest(unittest.TestCase):
         """Test adding a mask to the database"""
         self.db.add_mask(self.mask, self.image.name)
 
+    def test_add_spythis_mask(self):
+        """Test adding a spythis mask to the database"""
+        # Spy this masks all have the same clue string "#"
+        parent = 'test_image'
+        self.db.add_mask(pyspy.images.ImageMask(parent, pyspy.levels.EASY, '#'), parent)
+        self.db.add_mask(pyspy.images.ImageMask(parent, pyspy.levels.HARD, '#'), parent)
+        masks = self.db.get_mask(parent)
+        self.assertEqual(2, len(masks))
+
     def test_get_mask_by_clue(self):
         """Test getting a mask from the database by clue"""
         self.db.add_mask(self.mask, self.image.name)
@@ -64,21 +73,54 @@ class DatabaseTest(unittest.TestCase):
 
     def test_get_masks_by_difficulty(self):
         """Test getting a list of masks for a level by difficulty"""
-        parent = 'test_image'
-        masks = [pyspy.images.ImageMask('', pyspy.levels.EASY,
-                'test_clue1'),
-                pyspy.images.ImageMask('', pyspy.levels.EASY,
-                    'test_clue2'),
-                pyspy.images.ImageMask('', pyspy.levels.HARD,
-                    'test_clue3')]
-        [self.db.add_mask(mask, parent) for mask in masks]
-        retrieved_masks = self.db.get_mask(parent, 
+        image, masks = fill_database(self.db, self.image.name)
+        retrieved_masks = self.db.get_mask(self.image.name, 
                 difficulty=pyspy.levels.EASY)
         self.assertEqual(2, len(retrieved_masks))
         self.assertTrue(retrieved_masks[0] == masks[0])
         # Now try and get a MEDIUM difficulty mask
-        self.assertTrue(
-            self.db.get_mask(parent, difficulty=pyspy.levels.MEDIUM) == [])
+        self.assertTrue(self.db.get_mask(self.image.name,
+            difficulty=pyspy.levels.MEDIUM) == [])
+
+    def test_get_all_masks(self):
+        """Test getting all the masks for a level"""
+        image, masks = fill_database(self.db, self.image.name)
+        image2 = pyspy.images.SpyImage(pyspy.images.IMAGE_SIZE,
+                'test_image2')
+        self.db.add_image(image2)
+        mask2 = pyspy.images.ImageMask('test_image2', pyspy.levels.EASY, 'test_clue2')
+        self.db.add_mask(mask2, image2.name)
+        retrieved_masks = self.db.get_mask(self.image.name)
+        self.assertEqual(len(masks), len(retrieved_masks))
+        self.assertTrue(masks[0] in retrieved_masks)
+
+    def test_number_of_masks(self):
+        """Test getting the number of masks for a level held in the database"""
+        image, masks = fill_database(self.db, self.image.name)
+        self.assertEqual(len(masks), self.db.get_num_masks(self.image.name))
+        self.assertEqual(0, self.db.get_num_masks('notInDatabase'))
+
+    def test_get_all_images(self):
+        """Test getting all images stored in the database"""
+        image, masks = fill_database(self.db, self.image.name)
+        image2 = pyspy.images.SpyImage(pyspy.images.IMAGE_SIZE,
+                'test_image2')
+        self.db.add_image(image2)
+        self.assertEqual(2, len(self.db.get_image(None)))
+
+def fill_database(db, level_name):
+    image = pyspy.images.SpyImage(pyspy.images.IMAGE_SIZE,
+            level_name)
+    db.add_image(image)
+    masks = [pyspy.images.ImageMask('', pyspy.levels.EASY,
+            'test_clue1'),
+            pyspy.images.ImageMask('', pyspy.levels.EASY,
+                'test_clue2'),
+            pyspy.images.ImageMask('', pyspy.levels.HARD,
+                'test_clue3')]
+    [db.add_mask(mask, level_name) for mask in masks]
+    return image, masks
+
 
 class DatabaseBuilderTest(unittest.TestCase):
 
@@ -102,6 +144,16 @@ class DatabaseBuilderTest(unittest.TestCase):
         self.assertEqual(self.image, image)
         mask = self.db.get_mask('test_image', 'test_clue1')
         self.assertEqual(self.masks[0], mask)
+
+    def test_load_database_from_file(self):
+        """Test loading a level into the database from the filesystem"""
+        test_level = 'bookcase'
+        pyspy.database.load_database_from_file(self.db, test_level)
+        image = self.db.get_image(test_level)
+        self.assertEqual(image.name, test_level)
+        masks = self.db.get_mask(test_level, difficulty = pyspy.levels.EASY)
+        self.assertTrue(masks != [], "No masks found in database")
+        self.assertTrue(masks[0].level == pyspy.levels.EASY)
 
 if __name__ == "__main__":
     unittest.main()
