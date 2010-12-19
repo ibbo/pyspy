@@ -28,6 +28,12 @@ from pyspy.constants import *
 import pygame
 from pygame.locals import *
 
+EASY = 0
+MEDIUM = 1
+HARD = 2
+FIENDISH = 3
+IMPOSSIBLE = 4
+
 def parseLevelName(levelName):
     p = re.compile('^([a-zA-Z]+)_((?:[a-zA-Z]+|#[0-9]*)_+)([0-9]+)')
     m = p.match(levelName)
