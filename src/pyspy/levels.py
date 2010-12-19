@@ -50,8 +50,39 @@ def getLevels(path=LEVEL_DIR):
         for i in os.listdir(path) if p.match(i)]
     return levels
 
+def getMasksForLevel(level, path=LEVEL_DIR):
+    matches = [pyspy.levels.parseLevelName(i) \
+                for i in os.listdir(path) if level in i]
+    matches = [i for i in matches if i]
+
+    masks = []
+    has_spythis = False
+    for match in matches:
+        maskFile = match['filename'] + '.png'
+        if '#' in match['clue']:
+            has_spythis = True
+        difficulty = convertLevelToDifficulty(int(match['level']))
+        masks.append(pyspy.images.ImageMask(maskFile, difficulty, \
+                match['clue'].replace('_', ' ').strip()))
+
+    return masks, has_spythis
+
 def checkLevel(level, path=LEVEL_DIR):
     return level+'.png' in os.listdir(path)
+
+def convertLevelToDifficulty(level_num):
+    if level_num in range(0,3):
+        return pyspy.levels.EASY
+    elif level_num in range(3,5):
+        return pyspy.levels.MEDIUM
+    elif level_num in range(5,8):
+        return pyspy.levels.HARD
+    elif level_num in range(8,10):
+        return pyspy.levels.FIENDISH
+    elif level_num == 10:
+        return pyspy.levels.IMPOSSIBLE
+    else:
+        raise Exception, "Level out of range"
 
 def checkForUpdates(url=SERVER_URL, localPath=LEVEL_DIR, remotePath=REMOTE_LEVEL_DIR):
     opener = urllib.FancyURLopener({})

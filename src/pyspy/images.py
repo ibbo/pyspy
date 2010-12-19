@@ -55,8 +55,10 @@ class SpyImage(pygame.Surface):
         return levels
 
     def set_mask(self, level=1):
+        difficulty = pyspy.levels.convertLevelToDifficulty(level)
         # Take a random mask
-        masks = [i for i in self.info.masks if i.level == level]
+        masks = [i for i in self.info.masks 
+                    if i.level == difficulty and not i.used]
         if len(masks) > 0:
             self.mask = masks[random.randint(0,len(masks)-1)]
         else:
@@ -65,6 +67,7 @@ class SpyImage(pygame.Surface):
             return None
         self.clue.reset(self.mask.clue)
         self.mask.load_mask()
+        self.mask.used = True
 
     def set_spythis_masks(self):
         # Take 5 random masks
@@ -85,22 +88,9 @@ class ImageInfo:
         self.masks = self.initMasks(path)
         
     def initMasks(self, path):
-        #levelList = getLevelList('levels')
         base_name = pyspy.utilities.strip_ext(self.basefile)
-        matches = [pyspy.levels.parseLevelName(i) \
-                    for i in os.listdir(path) if base_name in i]
-        matches = [i for i in matches if i]
-
-        masks = []
-        for match in matches:
-            maskFile = match['filename'] + '.png'
-            if '#' in match['clue']:
-                self.has_spythis = True
-            masks.append(ImageMask(maskFile, int(match['level']), \
-                    match['clue'].replace('_', ' ').strip()))
-
+        masks, self.has_spythis = pyspy.levels.getMasksForLevel(base_name)
         return masks
-
 
     def addMask(self, mask):
         self.masks.append(mask)
@@ -119,6 +109,7 @@ class ImageMask:
         self.clue = clue
         self.found = False
         self.dirty = False
+        self.used = False
         if '#' in self.clue:
             self.spythis = True
         else:

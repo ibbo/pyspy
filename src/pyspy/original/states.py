@@ -202,7 +202,7 @@ class NextLevel(pyspy.states.GameState):
         
 
     def update(self):
-        if not self.level_exists:
+        if self.gameScreen.level > 10:
             self.gameScreen.state = self.gameScreen.states['GameOver']
             self.gameScreen.state.enter(1)
             return

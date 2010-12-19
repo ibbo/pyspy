@@ -236,15 +236,19 @@ class GameScreen:
         return True
 
     def set_level(self, level):
+        """Search through images for those images which contain valid levels"""
+        if level > 10:
+            return False
+        difficulty = pyspy.levels.convertLevelToDifficulty(level)
         valid_images = []
         for i in self.images:
             if self.spythis:
                 if i.info.has_spythis:
                     valid_images.append(i)
             else:
-                if level in i.levels['ispy']:
-                    valid_images.append(i)
+                [valid_images.append(i) for j in i.info.masks if (j.level == difficulty and not j.used) and not j.spythis]
 
+        # If there are images with levels to choose from, select a random one
         if valid_images:
             self.set_image(valid_images[random.randint(0,len(valid_images)-1)])
         else:
@@ -290,6 +294,10 @@ class GameScreen:
                     print "Generating level: %s" %(i)
                     pyspy.levels.generateLevel(i)
             self.loaded = True
+
+        for i in self.images:
+            for mask in i.info.masks:
+                mask.used = False
 
         if self.levels:
             self.state = self.states['NextLevel']
