@@ -285,7 +285,7 @@ class GameScreen:
             self.images = []
             for i in self.levels:
                 if pyspy.levels.checkLevel(i):
-                    self.images.append(pyspy.images.SpyImage((640,480), i))
+                    self.images.append(pyspy.images.SpyImage(pyspy.images.IMAGE_SIZE, i))
                 else:
                     print "Generating level: %s" %(i)
                     pyspy.levels.generateLevel(i)

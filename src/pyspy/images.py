@@ -24,6 +24,9 @@ import pyspy
 from pygame.locals import *
 from pyspy.constants import *
 
+# All images in the game are set to this value
+IMAGE_SIZE = (640,480)
+
 class SpyImage(pygame.Surface):
     def __init__(self,size,name):
         pygame.Surface.__init__(self,size)
