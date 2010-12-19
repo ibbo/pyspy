@@ -64,12 +64,14 @@ class SpyImage(pygame.Surface):
             print "No levels found"
             return None
         self.clue.reset(self.mask.clue)
+        self.mask.load_mask()
 
     def set_spythis_masks(self):
         # Take 5 random masks
         random.shuffle(self.info.masks)
         if len(self.info.masks) > 0:
             self.masks = self.info.masks[:5]
+            [i.load_mask() for i in self.masks]
             return True
         else:
             self.mask = []
@@ -112,11 +114,7 @@ class ImageInfo:
 
 class ImageMask:
     def __init__(self, filename, level, clue):
-        self.image, self.rect = \
-                pyspy.utilities.load_png(filename, rootpath=LEVEL_DIR)
-        self.mask = pygame.mask.from_surface(self.image)
-        self.mask_rect = self.image.get_bounding_rect()
-        self.spythis_rect = Rect(self.mask_rect)
+        self.filename = filename
         self.level = level
         self.clue = clue
         self.found = False
@@ -130,6 +128,13 @@ class ImageMask:
 
     def __str__(self):
         return self.clue + ' level: ' + str(self.level)
+
+    def load_mask(self):
+        self.image, self.rect = \
+                pyspy.utilities.load_png(self.filename, rootpath=LEVEL_DIR)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_rect = self.image.get_bounding_rect()
+        self.spythis_rect = Rect(self.mask_rect)
 
     def get_distance(self, pos):
         masks = self.mask.connected_components()
